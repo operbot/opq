@@ -6,13 +6,12 @@
 
 
 import os
-import sys
 
 
 def popen(txt):
     for line in os.popen(txt).readlines():
         print(line.strip())
-        sys.stdout.flush()
+
 
 popen("python3 setup.py sdist")
 popen("python3 -m pip wheel -e .")

@@ -27,7 +27,7 @@ reading type from the object.
 **INSTALL**
 
 |
-| ``python3 -m pip install objectprogramming``
+| ``python3 -m pip install opq`
 |
 
 **PROGRAMMING**
@@ -61,7 +61,7 @@ great for giving objects peristence by having their state stored in files::
  >>> from opq import Object, save
  >>> o = Object()
  >>> save(o)
- 'opq.objects.Object/2021-08-31/15:31:05.717063'
+ 'opq.obj.Object/2021-08-31/15:31:05.717063'
 
 |
 

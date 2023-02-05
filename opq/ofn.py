@@ -4,9 +4,11 @@
 "functions"
 
 
+from . import kind, update
+
+
 from .dbs import Db
 from .jsn import dump
-from .obj import kind, update
 from .wdr import Wd
 
 

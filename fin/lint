@@ -6,10 +6,10 @@
 
 
 import os
-import sys
 
 
 SKIP = ["---", "Your code"]
+IGNORE = "C,R,E0402,E0401,E1101,W0201,W0703,W0613,W0108,W0406,W0212,W0622"
 
 
 def doskip(txt):
@@ -32,10 +32,9 @@ def loop(path, txt):
             if doskip(line):
                 continue
             print(line.rstrip())
-            sys.stdout.flush()
         os.chdir("..")
 
 
 if __name__ == "__main__":
     os.popen("fin/clean").readlines()
-    loop(os.getcwd(), "pylint *")
+    loop(os.getcwd(), "pylint -d %s *" % IGNORE)

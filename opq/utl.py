@@ -4,10 +4,8 @@
 "utilitites"
 
 
-import getpass
 import os
 import pathlib
-import pwd
 import time
 import types
 

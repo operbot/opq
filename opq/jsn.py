@@ -9,7 +9,9 @@ import os
 import _thread
 
 
-from .obj import Object, update
+from . import Object, update
+
+
 from .utl import cdir, locked
 from .wdr import Wd
 

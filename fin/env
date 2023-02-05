@@ -15,7 +15,6 @@ import os
 
 
 def popen(txt):
-    "run command"
     for line in os.popen(txt).readlines():
         print(line.strip())
 
@@ -27,7 +26,7 @@ name = os.getcwd()
 
 
 if not os.path.exists("dist"):
-    popen("fin/build")
+    popen("fin/bld")
 
 
 popen("python3 -mvirtualenv --system-site-packages env")

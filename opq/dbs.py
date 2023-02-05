@@ -7,9 +7,11 @@
 import os
 
 
+from . import search
+
+
 from .cls import Classes
 from .jsn import load
-from .obj import search
 from .utl import fnclass, fntime
 from .wdr import Wd
 

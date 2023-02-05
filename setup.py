@@ -24,7 +24,7 @@ setup(
     long_description=read(),
     long_description_content_type="text/x-rst",
     license="Public Domain",
-    py_modules=["opq"],
+    packages=["opq"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: Public Domain",

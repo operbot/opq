@@ -6,12 +6,11 @@
 
 
 import os
-import sys
 
 
 def popen(txt):
     for line in os.popen(txt).readlines():
-        print(line.rstrip())
-        sys.stdout.flush()
+        print(line.strip())
 
-popen("python3 -m pytest --show-capture=stdout --capture=sys")
+
+popen("python3 -m pytest")

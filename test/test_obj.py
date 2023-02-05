@@ -6,9 +6,9 @@ import os
 import unittest
 
 
+from opq import *
+
 from opq.jsn import ObjectDecoder, ObjectEncoder, load
-from opq.obj import Object, items, keys, update, values
-from opq.obj import format, kind
 from opq.ofn import save
 from opq.wdr import Wd
 
@@ -153,7 +153,7 @@ class TestObject(unittest.TestCase):
         self.assertTrue(Object().__module__, "opq")
 
     def test_kind(self):
-        self.assertEqual(kind(Object()), "opq.obj.Object")
+        self.assertEqual(kind(Object()), "opq.Object")
 
     def test_repr(self):
         self.assertTrue(update(Object(),

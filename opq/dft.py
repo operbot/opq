@@ -4,7 +4,7 @@
 "default"
 
 
-from .obj import Object
+from . import Object
 
 
 def __dir__():

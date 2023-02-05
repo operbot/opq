@@ -7,7 +7,7 @@
 import os
 
 
-from .obj import Object
+from . import Object
 
 
 def __dir__():
@@ -21,7 +21,7 @@ __all__ = __dir__()
 
 class Wd(Object):
 
-    workdir = ".opr"
+    workdir = ".opq"
 
     @staticmethod
     def get():
