@@ -24,7 +24,7 @@ def popen(txt, silent=False):
 def main():
     popen("rm -fR build dist MANIFEST *.egg-info")
     popen("rm -fR  __pycache__ *~")
-    popen("rm -fR .test")
+    popen("rm -fR .test .opr .opq")
     popen("fin/loop . rm -fR \*~")
     popen("fin/loop . rm -fR __pycache__")
 
