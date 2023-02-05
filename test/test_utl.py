@@ -15,7 +15,6 @@ ATTRIBUTES = [
               'fntime',
               'locked',
               'name',
-              'spl',
              ]
 
 

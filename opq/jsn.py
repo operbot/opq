@@ -5,15 +5,11 @@
 
 
 import json
-import os
 import _thread
 
 
-from . import Object, update
-
-
+from .obj import Object
 from .utl import cdir, locked
-from .wdr import Wd
 
 
 def __dir__():
@@ -25,7 +21,6 @@ def __dir__():
             'load',
             'loads'
            )
-
 
 __all__ = __dir__()
 
@@ -60,6 +55,7 @@ class ObjectEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, o)
         except TypeError:
             return str(o)
+
 
 @locked(disklock)
 def dump(obj, opath):

@@ -1,28 +1,64 @@
 # This file is placed in the Public Domain.
 
 
-"databases"
+"database"
 
 
+import json
 import os
+import _thread
 
 
-from . import search
-
-
-from .cls import Classes
-from .jsn import load
-from .utl import fnclass, fntime
+from .jsn import ObjectDecoder, ObjectEncoder
+from .obj import kind, search, update
+from .utl import cdir, fnclass, fntime, locked
 from .wdr import Wd
+
 
 
 def __dir__():
     return (
+            'Classes',
             'Db',
+            'dump',
+            'last',
+            'load',
+            'save'
            )
 
 
 __all__ = __dir__()
+
+
+
+disklock = _thread.allocate_lock()
+
+
+class Classes:
+
+    cls = {}
+
+    @staticmethod
+    def add(clz):
+        Classes.cls["%s.%s" % (clz.__module__, clz.__name__)] =  clz
+
+    @staticmethod
+    def all(oname=None):
+        res = []
+        for key, value in Classes.cls.items():
+            if oname is not None and oname not in key:
+                continue
+            res.append(value)
+        return res
+
+    @staticmethod
+    def get(oname):
+        return Classes.cls.get(oname, None)
+
+
+    @staticmethod
+    def remove(oname):
+        del Classes.cls[oname]
 
 
 class Db:

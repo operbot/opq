@@ -4,7 +4,7 @@
 import unittest
 
 
-from opq.wdr import Wd
+from opq.dbs import Wd
 
 
 class TestWorkingDirectory(unittest.TestCase):

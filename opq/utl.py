@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"utilitites"
+"utility"
 
 
 import os
@@ -18,7 +18,6 @@ def __dir__():
             'fntime',
             'locked',
             'name',
-            'spl',
            )
 
 
@@ -135,11 +134,3 @@ def name(obj):
     if "__name__" in dir(obj):
         return "%s.%s" % (obj.__class__.__name__, obj.__name__)
     return None
-
-
-def spl(txt):
-    try:
-        res = txt.split(",")
-    except (TypeError, ValueError):
-        res = txt
-    return [x for x in res if x]

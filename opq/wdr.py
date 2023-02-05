@@ -7,9 +7,6 @@
 import os
 
 
-from . import Object
-
-
 def __dir__():
     return (
             'Wd',
@@ -19,7 +16,7 @@ def __dir__():
 __all__ = __dir__()
 
 
-class Wd(Object):
+class Wd:
 
     workdir = ".opq"
 

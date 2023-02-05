@@ -61,18 +61,18 @@ great for giving objects peristence by having their state stored in files::
  >>> from opq import Object, save
  >>> o = Object()
  >>> save(o)
- 'opq.obj.Object/2021-08-31/15:31:05.717063'
+ 'opq.Object/2021-08-31/15:31:05.717063'
 
 |
 
 **AUTHOR**
 
 |
-| Bart Thate 
+| B.H.J. Thate 
 |
 
 **COPYRIGHT**
 
 |
-| ``opq`` is placed in the Public Domain. No Copyright, No License.
+| ``opq`` is placed in the Public Domain.
 |

@@ -4,7 +4,7 @@
 import unittest
 
 
-from opq import Object
+from opq.obj import Object
 from opq.jsn import dumps, loads
 
 
