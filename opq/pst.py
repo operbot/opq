@@ -4,16 +4,10 @@
 "persist"
 
 
-import datetime
-import os
-import uuid
-import _thread
-
 
 from .dbs import Db
 from .jsn import dump
-from .obj import Object, kind, oid, update
-from .utl import cdir, locked
+from .obj import kind, oid, update
 from .wdr import Wd
 
 
@@ -30,7 +24,7 @@ __all__ = __dir__()
 def last(obj, selector=None):
     if selector is None:
         selector = {}
-    fn, ooo = Db.last(kind(obj), selector)
+    _fn, ooo = Db.last(kind(obj), selector)
     if ooo:
         update(obj, ooo)
 

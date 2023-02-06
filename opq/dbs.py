@@ -4,14 +4,13 @@
 "database"
 
 
-import json
 import os
 import _thread
 
 
-from .jsn import ObjectDecoder, ObjectEncoder, load
-from .obj import Object, kind, search, update
-from .utl import cdir, fnclass, fntime, locked
+from .jsn import load
+from .obj import Object, search
+from .utl import fnclass, fntime
 from .wdr import Wd
 
 
@@ -19,10 +18,7 @@ def __dir__():
     return (
             'Classes',
             'Db',
-            'dump',
-            'last',
             'load',
-            'save'
            )
 
 
@@ -64,7 +60,6 @@ class Db:
     @staticmethod
     def all(otp, selector=None):
         names = Wd.types(otp)
-        result = []
         for nme in names:
             for obj in Db.find(nme, selector):
                 yield obj

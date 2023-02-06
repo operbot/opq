@@ -153,7 +153,7 @@ class Fetcher(Object):
 
     def run(self):
         thrs = []
-        for fnm, feed in Db.all("rss"):
+        for _fn, feed in Db.all("rss"):
             thrs.append(launch(self.fetch, feed))
         return thrs
 
@@ -302,6 +302,7 @@ def rss(event):
             event.reply("%s %s" % (
                                    nrs,
                                    format(feed),
+                                   elapsed(fntime(fnm))
                                   )
                        )
             nrs += 1
@@ -312,7 +313,7 @@ def rss(event):
     if "http" not in url:
         event.reply("i need an url")
         return
-    fnm, res = Db.match("rss", {"rss": url})
+    _fn, res = Db.match("rss", {"rss": url})
     if res:
         event.reply("already got %s" % url)
         return

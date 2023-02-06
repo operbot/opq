@@ -5,7 +5,6 @@ import unittest
 
 
 from opq.obj import Object
-from opq.pst import Persist
 
 
 class A(Object):

@@ -134,11 +134,3 @@ def name(obj):
     if "__name__" in dir(obj):
         return "%s.%s" % (obj.__class__.__name__, obj.__name__)
     return None
-
-
-def oid(obj):
-     return os.path.join(
-                         kind(self),
-                         str(uuid.uuid4().hex),
-                         os.sep.join(str(datetime.datetime.now()).split()),
-                        )

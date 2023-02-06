@@ -27,7 +27,7 @@ reading type from the object.
 **INSTALL**
 
 |
-| ``python3 -m pip install opq`
+| ``python3 -m pip install opq``
 |
 
 **PROGRAMMING**

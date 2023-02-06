@@ -6,7 +6,6 @@
 
 import datetime
 import os
-import json
 import uuid
 
 
@@ -102,11 +101,11 @@ def kind(self):
 
 
 def oid(self):
-     return os.path.join(
-                         kind(self),
-                         str(uuid.uuid4().hex),
-                         os.sep.join(str(datetime.datetime.now()).split()),
-                        )
+    return os.path.join(
+                        kind(self),
+                        str(uuid.uuid4().hex),
+                        os.sep.join(str(datetime.datetime.now()).split()),
+                       )
 
 
 def search(self, selector):
