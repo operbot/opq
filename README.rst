@@ -11,10 +11,10 @@ README
 
 
 The ``opq`` package provides an Object class, that allows for save/load to/from
-json files on disk. Objects can be searched with database functions and uses
-read-only files to improve persistence and a type in filename for
-reconstruction. Methods are factored out into functions to have a clean
-namespace to read JSON data into.
+json files on disk. Objects can be searched with database functions and has a 
+ype in filename for reconstruction. Methods are factored out into functions to
+have a clean namespace to read JSON data into.
+
 
 ``opq`` stores it's data on disk where objects are time versioned and the
 last version saved on disk is served to the user layer. Files are JSON dumps
@@ -61,7 +61,7 @@ great for giving objects peristence by having their state stored in files::
  >>> from opq import Object, save
  >>> o = Object()
  >>> save(o)
- 'opq.obj.Object/2021-08-31/15:31:05.717063'
+ 'opq.objects.Object/2021-08-31/15:31:05.717063'
 
 |
 
