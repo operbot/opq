@@ -3,6 +3,7 @@
 
 from opq.dbs import Db
 from opq.obj import format, keys
+from opq.utl import elapsed, fntime
 from opq.wdr import Wd
 
 
@@ -33,9 +34,10 @@ def fnd(event):
     for path, obj in Db.all(otype, event.gets):
         if not keyz:
             keyz = "," + ",".join(keys(obj))
-        txt = "%s %s" % (
+        txt = "%s %s %s" % (
                          str(nmr),
                          format(obj, keyz),
+                         elapsed(fntime(path))
                         )
         nmr += 1
         event.reply(txt)

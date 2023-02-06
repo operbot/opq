@@ -13,7 +13,7 @@ def read():
 
 setup(
     name="opq",
-    version="1",
+    version="2",
     author="Bart Thate",
     author_email="operbot100@gmail.com",
     url="http://github.com/operbot/opq",

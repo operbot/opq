@@ -18,6 +18,6 @@ class TestPersist(unittest.TestCase):
 
     def test_save(self):
         Wd.workdir = ".test"
-        obj = Persist()
+        obj = Object()
         path = save(obj)
-        self.assertTrue(os.path.exists(os.path.join(Wd.workdir, "store", path)))
+        self.assertTrue(os.path.exists(path))

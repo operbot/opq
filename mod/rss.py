@@ -20,7 +20,7 @@ from opq.dbs import Classes, Db
 from opq.jsn import dump
 from opq.obj import Object, format, update
 from opq.pst import last, save
-from opq.utl import locked
+from opq.utl import elapsed, fntime, locked
 
 
 from opr.bus import Bus
@@ -299,7 +299,7 @@ def rss(event):
     if not event.rest:
         nrs = 0
         for fnm, feed in Db.all("rss"):
-            event.reply("%s %s" % (
+            event.reply("%s %s %s" % (
                                    nrs,
                                    format(feed),
                                    elapsed(fntime(fnm))
