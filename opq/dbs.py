@@ -10,7 +10,7 @@ import _thread
 
 
 from .jsn import ObjectDecoder, ObjectEncoder, load
-from .obj import kind, search, update
+from .obj import Object, kind, search, update
 from .utl import cdir, fnclass, fntime, locked
 from .wdr import Wd
 
@@ -124,3 +124,6 @@ class Db:
             if item:
                 return item
         return None, None
+
+
+Classes.add(Object)

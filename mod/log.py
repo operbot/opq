@@ -30,11 +30,11 @@ Classes.add(Log)
 def log(event):
     if not event.rest:
         nmr = 0
-        for obj in Db.all("log"):
+        for fnm, obj in Db.all("log"):
             event.reply("%s %s %s" % (
                                       nmr,
                                       obj.txt,
-                                      elapsed(time.time() - fntime(obj.__oid__)))
+                                      elapsed(time.time() - fntime(fnm)))
                                      )
             nmr += 1
         if not nmr:
