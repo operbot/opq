@@ -11,16 +11,12 @@ README
 
 
 The ``opq`` package provides an Object class, that allows for save/load to/from
-json files on disk. Objects can be searched with database functions and has a 
-ype in filename for reconstruction. Methods are factored out into functions to
+json files on disk. Objects can be searched with database functions and have a 
+type in filename for reconstruction. Methods are factored out into functions to
 have a clean namespace to read JSON data into.
 
-
-``opq`` stores it's data on disk where objects are time versioned and the
-last version saved on disk is served to the user layer. Files are JSON dumps
-that are read-only so thus should provide (disk) persistence. Paths carry the
-type in the path name what makes reconstruction from filename easier then
-reading type from the object.
+This package should result in a Queue derived (or compatible) class that can
+keep objects in sync on a multiprocessor environment.
 
 |
 
