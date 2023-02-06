@@ -8,12 +8,12 @@ import threading
 import time
 
 
-from opq.default import Default
-from opq.objects import update
+from ..default import Default
+from ..objects import update
 
 
 from .bus import Bus
-from .prs import Parsed
+from .parser import Parsed
 
 
 def __dir__():

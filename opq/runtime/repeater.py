@@ -4,8 +4,8 @@
 "repeater"
 
 
-from .thr import launch
-from .tmr import Timer
+from .thread import launch
+from .timer import Timer
 
 
 def __dir__():

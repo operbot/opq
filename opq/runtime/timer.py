@@ -8,11 +8,11 @@ import threading
 import time
 
 
-from opq.objects import Object
-from opq.utility import name
+from ..objects import Object
+from ..utility import name
 
 
-from .thr import launch
+from .thread import launch
 
 
 def __dir__():

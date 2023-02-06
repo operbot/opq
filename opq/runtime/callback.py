@@ -4,22 +4,22 @@
 "callbacks"
 
 
-from opq.objects import Object
+from ..objects import Object
 
 
-from .thr import launch
+from .thread import launch
 
 
 def __dir__():
     return (
-            'Callbacks',
+            'Callback',
            ) 
 
 
 __all__ = __dir__()
 
 
-class Callbacks(Object):
+class Callback(Object):
 
     def __init__(self):
         Object.__init__(self)

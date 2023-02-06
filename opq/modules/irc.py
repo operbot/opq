@@ -19,10 +19,10 @@ from ..objects import Object, format, keys, update
 from ..utility import elapsed, fntime, locked
 
 
-from ..runtime.cmd import Commands
-from ..runtime.evt import Event
-from ..runtime.hdl import Handler
-from ..runtime.thr import launch
+from ..runtime.command import Command
+from ..runtime.event import Event
+from ..runtime.handler import Handler
+from ..runtime.thread import launch
 
 
 def __dir__():
@@ -65,7 +65,7 @@ class Config(Default):
     nick = "opq"
     password = ""
     port = 6667
-    realname = "object programming queue"
+    realname = "opq"
     sasl = False
     server = "localhost"
     servermodes = ""
@@ -464,7 +464,7 @@ class IRC(Handler, Output):
             event.txt = " ".join(splitted)
             event.type = "command"
             event.orig = repr(self)
-            Commands.dispatch(event)
+            Command.dispatch(event)
 
     def quit(self, event):
         if event.orig and event.orig in self.zelf:

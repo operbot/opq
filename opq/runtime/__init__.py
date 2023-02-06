@@ -1,7 +1,8 @@
 # This file is placed in the Public Domain.
 
 
-"object programming runtime"
+"runtime"
 
 
-from . import bus, cbs, evt, hdl, prs, thr
+from . import bus, callback, command, config, event, handler, parser
+from . import scanner, thread, timer, utils

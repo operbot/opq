@@ -10,7 +10,7 @@ from ..utility import elapsed, name
 
 
 from ..runtime.bus import Bus
-from ..runtime.cmd import Commands
+from ..runtime.command import Command
 
 
 def __dir__():
@@ -30,7 +30,7 @@ starttime = time.time()
 
 
 def cmd(event):
-    event.reply(",".join(sorted(Commands.cmds)))
+    event.reply(",".join(sorted(Command.cmds)))
 
 
 def flt(event):

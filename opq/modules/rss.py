@@ -23,9 +23,9 @@ from ..utility import elapsed, fntime, locked
 
 
 from ..runtime.bus import Bus
-from ..runtime.thr import launch
-from ..runtime.rpt import Repeater
-from ..runtime.utl import spl
+from ..runtime.thread import launch
+from ..runtime.repeater import Repeater
+from ..runtime.utils import spl
 
 
 def __dir__():

@@ -8,10 +8,10 @@ import queue
 import threading
 
 
-from opq.utility import name
+from ..utility import name
 
 
-from .evt import Event
+from .event import Event
 
 
 def __dir__():

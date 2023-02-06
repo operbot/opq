@@ -4,7 +4,7 @@
 "bus"
 
 
-from opq.objects import Object
+from ..objects import Object
 
 
 def __dir__():

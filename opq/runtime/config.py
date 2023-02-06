@@ -4,7 +4,7 @@
 "config"
 
 
-from .prs import Parsed
+from .parser import Parsed
 
 
 def __dir__():

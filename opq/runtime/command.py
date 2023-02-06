@@ -4,38 +4,38 @@
 "commands"
 
 
-from opq.objects import Object
+from ..objects import Object
 
 
 def __dir__():
     return (
-            'Commands',
+            'Command',
            )
 
 
 __all__ = __dir__()
  
 
-class Commands(Object):
+class Command(Object):
 
     cmds = Object()
     errors = []
 
     @staticmethod
     def add(cmd):
-        setattr(Commands.cmds, cmd.__name__, cmd)
+        setattr(Command.cmds, cmd.__name__, cmd)
 
     @staticmethod
     def dispatch(evt):
         if not evt.isparsed:
             evt.parse(evt.txt)
-        func = getattr(Commands.cmds, evt.cmd, None)
+        func = getattr(Command.cmds, evt.cmd, None)
         if func:
             try:
                 func(evt)
             except Exception as ex:
                 exc = ex.with_traceback(ex.__traceback__)
-                Commands.errors.append(exc)
+                Command.errors.append(exc)
                 evt.ready()
                 return None
             evt.show()
@@ -43,4 +43,4 @@ class Commands(Object):
 
     @staticmethod
     def remove(cmd):
-        delattr(Commands.cmds, cmd)
+        delattr(Command.cmds, cmd)

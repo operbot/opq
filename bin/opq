@@ -21,13 +21,13 @@ from opq.storage import Wd
 
 
 from opq.runtime.bus import Bus
-from opq.runtime.cfg import Config
-from opq.runtime.cmd import Commands
-from opq.runtime.evt import Event
-from opq.runtime.hdl import Handler
-from opq.runtime.scn import scan
-from opq.runtime.thr import launch
-from opq.runtime.utl import privileges, wait
+from opq.runtime.config import Config
+from opq.runtime.command import Command
+from opq.runtime.event import Event
+from opq.runtime.handler import Handler
+from opq.runtime.scanner import scan
+from opq.runtime.thread import launch
+from opq.runtime.utils import privileges, wait
 
 
 from opq.modules import cmd, fnd, irc, log, rss
@@ -59,7 +59,7 @@ class CLI(Handler):
 class Console(CLI):
 
     def handle(self, event):
-        Commands.dispatch(event)
+        Command.dispatch(event)
         event.wait()
 
     def poll(self):
@@ -85,11 +85,11 @@ def daemon():
 
 def waiter():
     got = []
-    for ex in Commands.errors:
+    for ex in Command.errors:
         traceback.print_exception(type(ex), ex, ex.__traceback__)
         got.append(ex)
     for exc in got:
-        Commands.errors.remove(exc)
+        Command.errors.remove(exc)
 
 
 def wrap(func):

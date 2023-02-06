@@ -4,9 +4,9 @@
 import time
 
 
-from opq.storage import Db, Classes, save
-from opq.objects import Object
-from opq.utility import elapsed, fntime
+from ..storage import Db, Classes, save
+from ..objects import Object
+from ..utility import elapsed, fntime
 
 
 def __dir__():

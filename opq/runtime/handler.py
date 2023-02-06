@@ -9,9 +9,9 @@ import threading
 
 
 from .bus import Bus
-from .cbs import Callbacks
-from .cmd import Commands
-from .thr import launch
+from .callback import Callback
+from .command import Command
+from .thread import launch
 
 
 def __dir__():
@@ -23,21 +23,21 @@ def __dir__():
 __all__ = __dir__()
 
 
-class Handler(Callbacks):
+class Handler(Callback):
 
     def __init__(self):
-        Callbacks.__init__(self)
+        Callback.__init__(self)
         self.queue = queue.Queue()
         self.stopped = threading.Event()
         self.stopped.clear()
-        self.register("event", Commands.dispatch)
-        self.register("command", Commands.dispatch)
+        self.register("event", Command.dispatch)
+        self.register("command", Command.dispatch)
         Bus.add(self)
 
     def handle(self, event):
         if not event.orig:
             event.orig = repr(self)
-        Callbacks.dispatch(self, event)
+        Callback.dispatch(self, event)
 
     def loop(self):
         while not self.stopped.set():

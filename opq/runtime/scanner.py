@@ -7,11 +7,11 @@
 import inspect
 
 
-from opq.storage import Classes
-from opq.objects import Object
+from ..storage import Classes
+from ..objects import Object
 
 
-from .cmd import Commands
+from .command import Command
 
 
 def __dir__():
@@ -43,4 +43,4 @@ def scancmd(mod):
             continue
         names = cmd.__code__.co_varnames
         if "event" in names:
-            Commands.add(cmd)
+            Command.add(cmd)
