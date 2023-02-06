@@ -16,11 +16,9 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from opq.dbs import Classes, Db
-from opq.jsn import dump
-from opq.obj import Object, format, update
-from opq.pst import last, save
-from opq.utl import elapsed, fntime, locked
+from opq.storage import Classes, Db, last, save
+from opq.objects import Object, dump, format, update
+from opq.utility import elapsed, fntime, locked
 
 
 from opr.bus import Bus

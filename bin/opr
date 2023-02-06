@@ -16,8 +16,8 @@ import traceback
 sys.path.insert(0, os.getcwd())
 
 
-from opq.dft import Default
-from opq.wdr import Wd
+from opq.storage import Wd
+from opq.objects import Default
 
 
 from opr.bus import Bus

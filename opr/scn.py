@@ -7,8 +7,8 @@
 import inspect
 
 
-from opq.dbs import Classes
-from opq.obj import Object
+from opq.storage import Classes
+from opq.objects import Object
 
 
 from .cmd import Commands

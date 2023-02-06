@@ -8,8 +8,7 @@ import threading
 import time
 
 
-from opq.dft import Default
-from opq.obj import update
+from opq.objects import Default, update
 
 
 from .bus import Bus

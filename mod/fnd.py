@@ -1,10 +1,9 @@
 # This file is placed in the Public Domain.
 
 
-from opq.dbs import Db
-from opq.obj import format, keys
-from opq.utl import elapsed, fntime
-from opq.wdr import Wd
+from opq.storage import Db, Wd
+from opq.objects import format, keys
+from opq.utility import elapsed, fntime
 
 
 def __dir__():

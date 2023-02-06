@@ -8,8 +8,8 @@ import threading
 import time
 
 
-from opq.obj import Object
-from opq.utl import name
+from opq.objects import Object
+from opq.utility import name
 
 
 from .thr import launch

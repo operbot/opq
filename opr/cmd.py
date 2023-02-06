@@ -4,7 +4,7 @@
 "commands"
 
 
-from opq.obj import Object
+from opq.objects import Object
 
 
 def __dir__():

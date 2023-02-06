@@ -8,51 +8,22 @@ import os
 import _thread
 
 
-from .jsn import load
-from .obj import Object, search
-from .utl import fnclass, fntime
-from .wdr import Wd
+from .objects import Object, kind, load, oid, search, update
+from .utility import fnclass, fntime
 
 
 def __dir__():
     return (
             'Classes',
             'Db',
-            'load',
+            'Wd',
+            'last',
+            'save'
            )
 
 
 __all__ = __dir__()
 
-
-disklock = _thread.allocate_lock()
-
-
-class Classes:
-
-    cls = {}
-
-    @staticmethod
-    def add(clz):
-        Classes.cls["%s.%s" % (clz.__module__, clz.__name__)] =  clz
-
-    @staticmethod
-    def all(oname=None):
-        res = []
-        for key, value in Classes.cls.items():
-            if oname is not None and oname not in key:
-                continue
-            res.append(value)
-        return res
-
-    @staticmethod
-    def get(oname):
-        return Classes.cls.get(oname, None)
-
-
-    @staticmethod
-    def remove(oname):
-        del Classes.cls[oname]
 
 
 class Db:
@@ -121,4 +92,80 @@ class Db:
         return None, None
 
 
+class Classes:
+
+    cls = {}
+
+    @staticmethod
+    def add(clz):
+        Classes.cls["%s.%s" % (clz.__module__, clz.__name__)] =  clz
+
+    @staticmethod
+    def all(oname=None):
+        res = []
+        for key, value in Classes.cls.items():
+            if oname is not None and oname not in key:
+                continue
+            res.append(value)
+        return res
+
+    @staticmethod
+    def get(oname):
+        return Classes.cls.get(oname, None)
+
+
+    @staticmethod
+    def remove(oname):
+        del Classes.cls[oname]
+
+
+class Wd:
+
+    workdir = ".opq"
+
+    @staticmethod
+    def get():
+        assert Wd.workdir
+        return Wd.workdir
+
+    @staticmethod
+    def getpath(path):
+        return os.path.join(Wd.get(), "store", path)
+
+    @staticmethod
+    def set(path):
+        Wd.workdir = path
+
+    @staticmethod
+    def storedir():
+        return os.path.join(Wd.get(), "store")
+
+    @staticmethod
+    def types(oname=None):
+        res = []
+        path = Wd.storedir()
+        if not os.path.exists(path):
+            return res
+        for fnm in os.listdir(path):
+            if oname and oname.lower() not in fnm.split(".")[-1].lower():
+                continue
+            if fnm not in res:
+                res.append(fnm)
+        return res
+
+
 Classes.add(Object)
+
+
+def last(obj, selector=None):
+    if selector is None:
+        selector = {}
+    _fn, ooo = Db.last(kind(obj), selector)
+    if ooo:
+        update(obj, ooo)
+
+
+def save(obj):
+    opath = Wd.getpath(oid(obj))
+    dump(obj, opath)
+    return opath

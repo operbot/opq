@@ -8,7 +8,7 @@ import queue
 import threading
 
 
-from opq.utl import name
+from opq.utility import name
 
 
 from .evt import Event

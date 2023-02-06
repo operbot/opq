@@ -4,8 +4,7 @@
 "parse"
 
 
-from opq.dft import Default
-from opq.obj import Object
+from opq.objects import Default, Object
 
 
 def __dir__():

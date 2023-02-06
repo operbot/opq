@@ -5,8 +5,8 @@ import threading
 import time
 
 
-from opq.obj import Object, update
-from opq.utl import elapsed, name
+from opq.objects import Object, update
+from opq.utility import elapsed, name
 
 
 from opr.bus import Bus
