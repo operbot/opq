@@ -11,6 +11,9 @@ import threading
 from opq.utl import name
 
 
+from .evt import Event
+
+
 def __dir__():
     return (
             'Thread',
@@ -48,7 +51,11 @@ class Thread(threading.Thread):
 
 
 def launch(func, *args, **kwargs):
-    thrname = kwargs.get("name", name(func))
+    thrname = kwargs.get("name", None)
+    if not thrname and args and isinstance(args[0], Event):
+        thrname = args[0].txt
+    else:
+        thrname = name(func)
     thr = Thread(func, thrname, *args)
     thr.start()
     return thr
