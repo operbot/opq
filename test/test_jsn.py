@@ -4,8 +4,7 @@
 import unittest
 
 
-from opq.obj import Object
-from opq.jsn import dumps, loads
+from opq.objects import Object, dumps, loads
 
 
 VALIDJSON = '{"test": "bla"}'

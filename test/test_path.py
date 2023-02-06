@@ -7,7 +7,7 @@
 import unittest
 
 
-from opq.utl import fntime
+from opq.utility import fntime
 
 
 FN = "opq.evt.Event/2d390009cef944e68ce686e5709a54d7/2022-04-11/22:40:31.259218"

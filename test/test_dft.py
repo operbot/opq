@@ -4,7 +4,7 @@
 import unittest
 
 
-from opq.dft import Default
+from opq.objects import Default
 
 
 class TestEvent(unittest.TestCase):

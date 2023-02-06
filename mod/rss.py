@@ -16,8 +16,9 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
+from opq.encoder import dump
+from opq.objects import Object, format, update
 from opq.storage import Classes, Db, last, save
-from opq.objects import Object, dump, format, update
 from opq.utility import elapsed, fntime, locked
 
 

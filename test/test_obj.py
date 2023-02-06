@@ -6,7 +6,7 @@ import os
 import unittest
 
 
-from opq.obj import *
+from opq.objects import *
 
 
 attrs1 = (
@@ -131,7 +131,7 @@ class TestObject(unittest.TestCase):
         self.assertTrue(Object().__module__, "opq")
 
     def test_kind(self):
-        self.assertEqual(kind(Object()), "opq.obj.Object")
+        self.assertEqual(kind(Object()), "opq.objects.Object")
 
     def test_repr(self):
         self.assertTrue(update(Object(),

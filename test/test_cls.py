@@ -7,7 +7,7 @@
 import unittest
 
 
-from opq.dbs import Classes
+from opq.storage import Classes
 
 
 class TestClasses(unittest.TestCase):

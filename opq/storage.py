@@ -8,7 +8,8 @@ import os
 import _thread
 
 
-from .objects import Object, kind, load, oid, search, update
+from .encoder import dump, load
+from .objects import Object, kind, oid, search, update
 from .utility import fnclass, fntime
 
 
@@ -50,7 +51,7 @@ class Db:
     @staticmethod
     def fns(otp):
         assert Wd.workdir
-        path = os.path.join(Wd.workdir, "store", otp) + os.sep
+        path = Wd.getpath(otp)
         dname = ""
         for rootdir, dirs, _files in os.walk(path, topdown=False):
             if dirs:
@@ -141,6 +142,10 @@ class Wd:
         return os.path.join(Wd.get(), "store")
 
     @staticmethod
+    def strip(path):
+        return path.split("store")[-1][1:]
+
+    @staticmethod
     def types(oname=None):
         res = []
         path = Wd.storedir()
@@ -168,4 +173,4 @@ def last(obj, selector=None):
 def save(obj):
     opath = Wd.getpath(oid(obj))
     dump(obj, opath)
-    return opath
+    return Wd.strip(opath)

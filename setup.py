@@ -13,10 +13,11 @@ def read():
 
 setup(
     name="opq",
-    version="2",
+    version="3",
     author="Bart Thate",
     author_email="operbot100@gmail.com",
     url="http://github.com/operbot/opq",
+    zip_safe=True,
     description="functional programming with objects",
     long_description=read(),
     long_description_content_type="text/x-rst",

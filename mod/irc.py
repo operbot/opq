@@ -13,8 +13,9 @@ import threading
 import _thread
 
 
+from opq.default import Default
 from opq.storage import Db, last, save
-from opq.objects import Default, Object, format, keys, update
+from opq.objects import Object, format, keys, update
 from opq.utility import elapsed, fntime, locked
 
 

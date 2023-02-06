@@ -16,18 +16,11 @@ from .utility import cdir, locked
 
 def __dir__():
     return (
-            'Default',
             'Object',
-            'ObjectDecoder',
-            'ObjectEncoder',
-            'dump',
-            'dumps',
             'format',
             'items',
             'keys',
             'kind',
-            'load',
-            'loads'
             'oid',
             'search',
             'update',
@@ -65,18 +58,6 @@ class Object:
 
     def __str__(self):
         return str(self. __dict__)
-
-
-class Default(Object):
-
-    __slots__ = ("__default__",)
-
-    def __init__(self):
-        Object.__init__(self)
-        self.__default__ = ""
-
-    def __getattr__(self, key):
-        return self.__dict__.get(key, self.__default__)
 
 
 def format(self, args="", skip="", plain=False):
@@ -156,60 +137,3 @@ def update(self, data):
 
 def values(self):
     return self.__dict__.values()
-
-
-## JSON
-
-
-class ObjectDecoder(json.JSONDecoder):
-
-
-    def decode(self, s, _w=None):
-        value = json.loads(s)
-        return Object(value)
-
-
-class ObjectEncoder(json.JSONEncoder):
-
-
-    def default(self, o):
-        if isinstance(o, dict):
-            return o.items()
-        if isinstance(o, Object):
-            return vars(o)
-        if isinstance(o, list):
-            return iter(o)
-        if isinstance(o,
-                      (type(str), type(True), type(False),
-                       type(int), type(float))
-                     ):
-            return str(o)
-        try:
-            return json.JSONEncoder.default(self, o)
-        except TypeError:
-            return str(o)
-
-
-@locked(disklock)
-def dump(obj, opath):
-    cdir(opath)
-    with open(opath, "w", encoding="utf-8") as ofile:
-        json.dump(
-            obj.__dict__, ofile, cls=ObjectEncoder, indent=4, sort_keys=True
-        )
-    return opath
-
-
-def dumps(self):
-    return json.dumps(self, cls=ObjectEncoder)
-
-
-@locked(disklock)
-def load(obj, opath):
-    with open(opath, "r", encoding="utf-8") as ofile:
-        res = json.load(ofile, cls=ObjectDecoder)
-        update(obj, res)
-
-
-def loads(jsonstr):
-    return json.loads(jsonstr, cls=ObjectDecoder)
