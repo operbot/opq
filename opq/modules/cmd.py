@@ -5,12 +5,12 @@ import threading
 import time
 
 
-from opq.objects import Object, update
-from opq.utility import elapsed, name
+from ..objects import Object, update
+from ..utility import elapsed, name
 
 
-from opr.bus import Bus
-from opr.cmd import Commands
+from ..runtime.bus import Bus
+from ..runtime.cmd import Commands
 
 
 def __dir__():

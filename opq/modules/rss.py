@@ -16,16 +16,16 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from opq.encoder import dump
-from opq.objects import Object, format, update
-from opq.storage import Classes, Db, last, save
-from opq.utility import elapsed, fntime, locked
+from ..encoder import dump
+from ..objects import Object, format, update
+from ..storage import Classes, Db, last, save
+from ..utility import elapsed, fntime, locked
 
 
-from opr.bus import Bus
-from opr.thr import launch
-from opr.rpt import Repeater
-from opr.utl import spl
+from ..runtime.bus import Bus
+from ..runtime.thr import launch
+from ..runtime.rpt import Repeater
+from ..runtime.utl import spl
 
 
 def __dir__():

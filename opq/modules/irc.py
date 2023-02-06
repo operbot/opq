@@ -13,16 +13,16 @@ import threading
 import _thread
 
 
-from opq.default import Default
-from opq.storage import Db, last, save
-from opq.objects import Object, format, keys, update
-from opq.utility import elapsed, fntime, locked
+from ..default import Default
+from ..storage import Db, last, save
+from ..objects import Object, format, keys, update
+from ..utility import elapsed, fntime, locked
 
 
-from opr.cmd import Commands
-from opr.evt import Event
-from opr.hdl import Handler
-from opr.thr import launch
+from ..runtime.cmd import Commands
+from ..runtime.evt import Event
+from ..runtime.hdl import Handler
+from ..runtime.thr import launch
 
 
 def __dir__():

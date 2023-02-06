@@ -20,21 +20,21 @@ from opq.default import Default
 from opq.storage import Wd
 
 
-from opr.bus import Bus
-from opr.cfg import Config
-from opr.cmd import Commands
-from opr.evt import Event
-from opr.hdl import Handler
-from opr.scn import scan
-from opr.thr import launch
-from opr.utl import privileges, wait
+from opq.runtime.bus import Bus
+from opq.runtime.cfg import Config
+from opq.runtime.cmd import Commands
+from opq.runtime.evt import Event
+from opq.runtime.hdl import Handler
+from opq.runtime.scn import scan
+from opq.runtime.thr import launch
+from opq.runtime.utl import privileges, wait
 
 
-from mod import cmd, fnd, irc, log, rss
+from opq.modules import cmd, fnd, irc, log, rss
 
 
 Cfg = Config()
-Wd.workdir = os.path.expanduser("~/.opr")
+Wd.workdir = os.path.expanduser("~/.opq")
 
 
 scan(cmd)
@@ -120,12 +120,12 @@ def main():
         Cfg.wait = False
         e.wait()
     elif "d" in Cfg.opts:
-        privileges("opr")
+        privileges("opq")
         daemon()
         Cfg.wait = True
     elif "c" in Cfg.opts:
         date = time.ctime(time.time()).replace("  ", " ")
-        print(f"OPR started {date}")
+        print(f"OPQ started {date}")
         csl = Console()
         csl.start()
         irc.init()
