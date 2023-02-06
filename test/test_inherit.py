@@ -5,6 +5,7 @@ import unittest
 
 
 from opq.obj import Object
+from opq.pst import Persist
 
 
 class A(Object):
@@ -25,17 +26,36 @@ class D:
 
     pass
 
+
 class E(A, D):
 
     pass
+
 
 class F(C, D):
 
     pass
 
-class H(dict, A):
+
+class H(dict):
 
     pass
+
+
+class I(object):
+
+    pass
+
+
+class J(A, I):
+
+    pass
+
+
+class K(J, H):
+
+    pass
+
 
 class TestInherit(unittest.TestCase):
 

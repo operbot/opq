@@ -5,10 +5,11 @@
 
 
 import json
+import os
 import _thread
 
 
-from .obj import Object
+from .obj import Object, update
 from .utl import cdir, locked
 
 
@@ -73,14 +74,9 @@ def dumps(self):
 
 @locked(disklock)
 def load(obj, opath):
-    splitted = opath.split(os.sep)
-    fnm = os.sep.join(splitted[-4:])
-    lpath = os.path.join(Wd.workdir, "store", fnm)
-    if os.path.exists(lpath):
-        with open(lpath, "r", encoding="utf-8") as ofile:
-            res = json.load(ofile, cls=ObjectDecoder)
-            update(obj, res)
-    obj.__oid__ = fnm
+    with open(opath, "r", encoding="utf-8") as ofile:
+        res = json.load(ofile, cls=ObjectDecoder)
+        update(obj, res)
 
 
 def loads(jsonstr):

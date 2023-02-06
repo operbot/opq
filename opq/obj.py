@@ -17,6 +17,7 @@ def __dir__():
             'items',
             'keys',
             'kind',
+            'oid',
             'search',
             'update',
             'values'
@@ -28,9 +29,7 @@ __all__ = __dir__()
 
 class Object:
 
-
     def __init__(self, *args, **kwargs):
-        object.__init__(self)
         if args:
             val = args[0]
             if isinstance(val, list):
@@ -100,6 +99,14 @@ def kind(self):
     if kin == "type":
         kin = self.__name__
     return kin
+
+
+def oid(self):
+     return os.path.join(
+                         kind(self),
+                         str(uuid.uuid4().hex),
+                         os.sep.join(str(datetime.datetime.now()).split()),
+                        )
 
 
 def search(self, selector):

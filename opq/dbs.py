@@ -9,11 +9,10 @@ import os
 import _thread
 
 
-from .jsn import ObjectDecoder, ObjectEncoder
+from .jsn import ObjectDecoder, ObjectEncoder, load
 from .obj import kind, search, update
 from .utl import cdir, fnclass, fntime, locked
 from .wdr import Wd
-
 
 
 def __dir__():
@@ -28,7 +27,6 @@ def __dir__():
 
 
 __all__ = __dir__()
-
 
 
 disklock = _thread.allocate_lock()
@@ -64,39 +62,29 @@ class Classes:
 class Db:
 
     @staticmethod
-    def all(otp, selector=None, index=None, timed=None, deleted=True):
+    def all(otp, selector=None):
         names = Wd.types(otp)
         result = []
         for nme in names:
-            res = Db.find(nme, selector, index, timed, deleted)
-            result.extend(res)
-        return sorted(result, key=lambda x: fntime(x.__oid__))
+            for obj in Db.find(nme, selector):
+                yield obj
 
     @staticmethod
-    def find(otp, selector=None, index=None, timed=None, deleted=True):
+    def find(otp, selector=None):
         if selector is None:
             selector = {}
-        nmr = -1
-        res = []
-        for fnm in Db.fns(otp, timed):
+        for fnm in Db.fns(otp):
             obj = Db.hook(fnm)
-            if deleted and "__deleted__" in obj and obj.__deleted__:
+            if "__deleted__" in obj and obj.__deleted__:
                 continue
             if selector and not search(obj, selector):
                 continue
-            nmr += 1
-            if index is not None and nmr != index:
-                continue
-            res.append(obj)
-        return res
+            yield fnm, obj
 
     @staticmethod
-    def fns(otp, timed=None):
-        if not otp:
-            return []
+    def fns(otp):
         assert Wd.workdir
         path = os.path.join(Wd.workdir, "store", otp) + os.sep
-        res = []
         dname = ""
         for rootdir, dirs, _files in os.walk(path, topdown=False):
             if dirs:
@@ -106,17 +94,7 @@ class Db:
                     fls = sorted(os.listdir(ddd))
                     if fls:
                         path2 = os.path.join(ddd, fls[-1])
-                        if (
-                            timed
-                            and "from" in timed
-                            and timed["from"]
-                            and fntime(path2) < timed["from"]
-                        ):
-                            continue
-                        if timed and timed.to and fntime(path2) > timed.to:
-                            continue
-                        res.append(path2)
-        return sorted(res)
+                        yield path2
 
     @staticmethod
     def hook(otp):
@@ -129,14 +107,14 @@ class Db:
         return obj
 
     @staticmethod
-    def last(otp, selector=None, index=None, timed=None):
+    def last(otp, selector=None):
         res = sorted(
-                     Db.find(otp, selector, index, timed),
-                     key=lambda x: fntime(x.__oid__)
+                     Db.find(otp, selector),
+                     key=lambda x: fntime(x[0])
                     )
         if res:
             return res[-1]
-        return None
+        return None, None
 
     @staticmethod
     def match(otp, selector=None):
@@ -145,4 +123,4 @@ class Db:
             item = Db.last(nme, selector)
             if item:
                 return item
-        return None
+        return None, None

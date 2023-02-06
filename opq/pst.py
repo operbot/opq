@@ -10,15 +10,15 @@ import uuid
 import _thread
 
 
+from .dbs import Db
 from .jsn import dump
-from .obj import Object, kind
+from .obj import Object, kind, oid, update
 from .utl import cdir, locked
 from .wdr import Wd
 
 
 def __dir__():
     return (
-            'Persist',
             'last',
             'save'
            ) 
@@ -27,29 +27,15 @@ def __dir__():
 __all__ = __dir__()
 
 
-class Persist(Object):
-
-    __slots__ = ('__oid__')
-
-    def __init__(self, *args, **kwargs):
-        Object.__init__(self, *args, **kwargs)
-        self. __oid__ = os.path.join(
-                                    kind(self),
-                                    str(uuid.uuid4().hex),
-                                    os.sep.join(str(datetime.datetime.now()).split()),
-                                   )
-
-
 def last(obj, selector=None):
     if selector is None:
         selector = {}
-    ooo = Db.last(kind(obj), selector)
+    fn, ooo = Db.last(kind(obj), selector)
     if ooo:
         update(obj, ooo)
-        obj.__oid__ = ooo.__oid__
 
 
 def save(obj):
-    opath = Wd.getpath(obj.__oid__)
+    opath = Wd.getpath(oid(obj))
     dump(obj, opath)
-    return obj.__oid__
+    return opath
