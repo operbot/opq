@@ -18,11 +18,12 @@ setup(
     author_email="operbot100@gmail.com",
     url="http://github.com/operbot/opq",
     zip_safe=True,
-    description="functional programming with objects",
+    description="object programming queue",
     long_description=read(),
     long_description_content_type="text/x-rst",
     license="Public Domain",
     packages=["opq"],
+    scripts=["bin/opq"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: Public Domain",

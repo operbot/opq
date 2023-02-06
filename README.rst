@@ -4,7 +4,7 @@ README
 **NAME**
 
 |
-| ``opq`` - object programming
+| ``opq`` - object programming queue
 |
 
 **SYNOPSIS**
@@ -61,14 +61,14 @@ great for giving objects peristence by having their state stored in files::
  >>> from opq import Object, save
  >>> o = Object()
  >>> save(o)
- 'opq.Object/2021-08-31/15:31:05.717063'
+ 'opq.obj.Object/2021-08-31/15:31:05.717063'
 
 |
 
 **AUTHOR**
 
 |
-| B.H.J. Thate 
+| B.H.J. Thate <operbot100@gmail.com>
 |
 
 **COPYRIGHT**

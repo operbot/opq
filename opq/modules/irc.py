@@ -60,17 +60,17 @@ class NoUser(Exception):
 
 class Config(Default):
 
-    channel = "#operbot"
+    channel = "#opq"
     control = "!"
-    nick = "operbot"
+    nick = "opq"
     password = ""
     port = 6667
-    realname = "program your own commands"
+    realname = "object programming queue"
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = "operbot"
+    username = "opq"
     users = False
 
     def __init__(self):
