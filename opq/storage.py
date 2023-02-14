@@ -1,23 +1,20 @@
 # This file is placed in the Public Domain.
 
 
-"database"
-
-
 import os
+import json
 import _thread
 
 
-from .encoder import dump, load
-from .objects import Object, kind, oid, search, update
-from .utility import fnclass, fntime
+from .decoder import load
+from .encoder import dump
+from .objects import Object, items, kind, oid, search, update
+from .utility import cdir, fnclass, fntime, locked
 
 
 def __dir__():
     return (
-            'Classes',
-            'Db',
-            'Wd',
+            'Storage',
             'last',
             'save'
            )
@@ -26,32 +23,50 @@ def __dir__():
 __all__ = __dir__()
 
 
+class NoClass(Exception):
 
-class Db:
+    pass
+
+
+class Storage:
+
+    cls = Object()
+    workdir = ""
 
     @staticmethod
-    def all(otp, selector=None):
-        names = Wd.types(otp)
-        for nme in names:
-            for obj in Db.find(nme, selector):
-                yield obj
+    def add(clz):
+        setattr(Storage.cls, "%s.%s" % (clz.__module__, clz.__name__), clz)
+
+    @staticmethod
+    def files(oname=None):
+        res = []
+        path = Storage.path("")
+        if not os.path.exists(path):
+            return res
+        for fnm in os.listdir(path):
+            if oname and oname.lower() not in fnm.split(".")[-1].lower():
+                continue
+            if fnm not in res:
+                res.append(fnm)
+        return res
 
     @staticmethod
     def find(otp, selector=None):
         if selector is None:
             selector = {}
-        for fnm in Db.fns(otp):
-            obj = Db.hook(fnm)
-            if "__deleted__" in obj and obj.__deleted__:
-                continue
-            if selector and not search(obj, selector):
-                continue
-            yield fnm, obj
+        for typ in Storage.types(otp):
+            for fnm in Storage.fns(typ):
+                obj = Storage.hook(fnm)
+                if "__deleted__" in obj and obj.__deleted__:
+                    continue
+                if selector and not search(obj, selector):
+                    continue
+                yield fnm, obj
 
     @staticmethod
     def fns(otp):
-        assert Wd.workdir
-        path = Wd.getpath(otp)
+        assert Storage.workdir
+        path = Storage.path(otp)
         dname = ""
         for rootdir, dirs, _files in os.walk(path, topdown=False):
             if dirs:
@@ -66,111 +81,47 @@ class Db:
     @staticmethod
     def hook(otp):
         fqn = fnclass(otp)
-        cls = Classes.get(fqn)
+        cls = getattr(Storage.cls, fqn, None)
         if not cls:
-            cls = Classes.all("Object")[-1]
+            raise NoClass(fqn)
         obj = cls()
-        load(obj, otp)
+        with open(otp, "r") as ofile:
+            dct = load(ofile)
+            update(obj, dct)
         return obj
 
     @staticmethod
-    def last(otp, selector=None):
-        res = sorted(
-                     Db.find(otp, selector),
-                     key=lambda x: fntime(x[0])
-                    )
-        if res:
-            return res[-1]
-        return None, None
+    def last(obj, selector=None):
+        if selector is None:
+            selector = {}
+        result = sorted(Storage.find(kind(obj), selector), key=lambda x: fntime(x[0]))
+        if result:
+            _fn, ooo = result[-1]
+            if ooo:
+                update(obj, ooo)
 
     @staticmethod
-    def match(otp, selector=None):
-        names = Wd.types(otp)
-        for nme in names:
-            item = Db.last(nme, selector)
-            if item:
-                return item
-        return None, None
-
-
-class Classes:
-
-    cls = {}
+    def path(path=""):
+        return os.path.join(Storage.workdir, "store", path)
 
     @staticmethod
-    def add(clz):
-        Classes.cls["%s.%s" % (clz.__module__, clz.__name__)] =  clz
+    def save(obj, opath=None):
+        if not opath:
+            opath = Storage.path(oid(obj))
+        cdir(opath)
+        with open(opath, "w") as ofile:
+            dump(obj, ofile)
+        return opath
 
     @staticmethod
-    def all(oname=None):
-        res = []
-        for key, value in Classes.cls.items():
-            if oname is not None and oname not in key:
-                continue
-            res.append(value)
-        return res
-
-    @staticmethod
-    def get(oname):
-        return Classes.cls.get(oname, None)
-
-
-    @staticmethod
-    def remove(oname):
-        del Classes.cls[oname]
-
-
-class Wd:
-
-    workdir = ".opq"
-
-    @staticmethod
-    def get():
-        assert Wd.workdir
-        return Wd.workdir
-
-    @staticmethod
-    def getpath(path):
-        return os.path.join(Wd.get(), "store", path)
-
-    @staticmethod
-    def set(path):
-        Wd.workdir = path
-
-    @staticmethod
-    def storedir():
-        return os.path.join(Wd.get(), "store")
+    def types(oname=None):
+        for name, _typ in items(Storage.cls):
+            if oname and oname in name.split(".")[-1].lower():
+                yield name
 
     @staticmethod
     def strip(path):
         return path.split("store")[-1][1:]
 
-    @staticmethod
-    def types(oname=None):
-        res = []
-        path = Wd.storedir()
-        if not os.path.exists(path):
-            return res
-        for fnm in os.listdir(path):
-            if oname and oname.lower() not in fnm.split(".")[-1].lower():
-                continue
-            if fnm not in res:
-                res.append(fnm)
-        return res
 
-
-Classes.add(Object)
-
-
-def last(obj, selector=None):
-    if selector is None:
-        selector = {}
-    _fn, ooo = Db.last(kind(obj), selector)
-    if ooo:
-        update(obj, ooo)
-
-
-def save(obj):
-    opath = Wd.getpath(oid(obj))
-    dump(obj, opath)
-    return Wd.strip(opath)
+Storage.add(Object)

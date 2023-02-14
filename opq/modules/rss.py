@@ -1,12 +1,10 @@
 # This file is placed in the Public Domain.
 
 
-"rich site syndicate"
-
-
 import html.parser
 import re
 import threading
+import time
 import urllib
 import _thread
 
@@ -16,24 +14,22 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from ..encoder import dump
-from ..objects import Object, format, update
-from ..storage import Classes, Db, last, save
-from ..utility import elapsed, fntime, locked
-
-
-from ..runtime.bus import Bus
-from ..runtime.thread import launch
-from ..runtime.repeater import Repeater
-from ..runtime.utils import spl
+from ..objects import Object, format, name, update
+from ..utility import fntime, locked
+from ..handler import Listens
+from ..runtime import launch
+from ..storage import Storage
+from ..utility import elapsed, spl
 
 
 def __dir__():
     return (
         "Feed",
         "Fetcher",
+        "Repeater",
         "Rss",
         "Seen",
+        "Timer",
         "debug",
         "init",
         "dpl",
@@ -63,7 +59,7 @@ class Feed(Object):
     pass
 
 
-Classes.add(Feed)
+Storage.add(Feed)
 
 
 class Rss(Object):
@@ -75,7 +71,7 @@ class Rss(Object):
         self.rss = ""
 
 
-Classes.add(Rss)
+Storage.add(Rss)
 
 
 class Seen(Object):
@@ -85,7 +81,7 @@ class Seen(Object):
         self.urls = []
 
 
-Classes.add(Seen)
+Storage.add(Seen)
 
 
 class Fetcher(Object):
@@ -137,27 +133,27 @@ class Fetcher(Object):
                 Fetcher.seen.urls.append(uurl)
             counter += 1
             if self.dosave:
-                save(fed)
+                Storage.save(fed)
             objs.append(fed)
         if objs:
-            save(Fetcher.seen)
+            Storage.save(Fetcher.seen)
         txt = ""
-        name = getattr(feed, "name")
-        if name:
-            txt = "[%s] " % name
+        feedname = getattr(feed, "name")
+        if feedname:
+            txt = "[%s] " % feedname
         for obj in objs:
             txt2 = txt + self.display(obj)
-            Bus.announce(txt2.rstrip())
+            Listens.announce(txt2.rstrip())
         return counter
 
     def run(self):
         thrs = []
-        for _fn, feed in Db.all("rss"):
+        for _fn, feed in Storage.find("rss"):
             thrs.append(launch(self.fetch, feed))
         return thrs
 
     def start(self, repeat=True):
-        last(Fetcher.seen)
+        Storage.last(Fetcher.seen)
         if repeat:
             repeater = Repeater(300.0, self.run)
             repeater.start()
@@ -191,6 +187,47 @@ class Parser(Object):
                 setattr(obj, itm, Parser.getitem(line, itm))
             res.append(obj)
         return res
+
+
+class Timer:
+
+    def __init__(self, sleep, func, *args, thrname=None):
+        super().__init__()
+        self.args = args
+        self.func = func
+        self.sleep = sleep
+        self.name = thrname or name(self.func)
+        self.state = Object
+        self.timer = None
+
+    def run(self):
+        self.state.latest = time.time()
+        launch(self.func, *self.args)
+
+    def start(self):
+        timer = threading.Timer(self.sleep, self.run)
+        timer.name = self.name
+        timer.daemon = True
+        timer.sleep = self.sleep
+        timer.state = self.state
+        timer.state.starttime = time.time()
+        timer.state.latest = time.time()
+        timer.func = self.func
+        timer.start()
+        self.timer = timer
+        return timer
+
+    def stop(self):
+        if self.timer:
+            self.timer.cancel()
+
+
+class Repeater(Timer):
+
+    def run(self):
+        thr = launch(self.start)
+        super().run()
+        return thr
 
 
 def getfeed(url, item):
@@ -250,11 +287,11 @@ def dpl(event):
         event.reply("dpl <stringinurl> <item1,item2>")
         return
     setter = {"display_list": event.args[1]}
-    fnm, feed = Db.match("rss", {"rss": event.args[0]})
-    if feed:
-        update(feed, setter)
-        dump(feed, fnm)
-        event.done()
+    for fnm, feed in Storage.find("rss", {"rss": event.args[0]}):
+        if feed:
+            update(feed, setter)
+            Storage.dump(feed, fnm)
+    event.reply("ok")
 
 
 def ftc(event):
@@ -275,11 +312,11 @@ def nme(event):
         event.reply("name <stringinurl> <name>")
         return
     selector = {"rss": event.args[0]}
-    fnm, feed = Db.match("rss", selector)
-    if feed:
-        feed.name = event.args[1]
-        dump(feed, fnm)
-        event.done()
+    for fnm, feed in Storage.find("rss", selector):
+        if feed:
+            feed.name = event.args[1]
+            Storage.dump(feed, fnm)
+    event.reply("ok")
 
 
 def rem(event):
@@ -287,17 +324,17 @@ def rem(event):
         event.reply("rem <stringinurl>")
         return
     selector = {"rss": event.args[0]}
-    fnm, feed = Db.match("rss", selector)
-    if feed:
-        feed.__deleted__ = True
-        dump(feed, fnm)
-        event.done()
+    for fnm, feed in Storage.find("rss", selector):
+        if feed:
+            feed.__deleted__ = True
+            Storage.dump(feed, fnm)
+    event.reply("ok")
 
 
 def rss(event):
     if not event.rest:
         nrs = 0
-        for fnm, feed in Db.all("rss"):
+        for fnm, feed in Storage.find("rss"):
             event.reply("%s %s %s" % (
                                    nrs,
                                    format(feed),
@@ -312,11 +349,11 @@ def rss(event):
     if "http" not in url:
         event.reply("i need an url")
         return
-    _fn, res = Db.match("rss", {"rss": url})
-    if res:
-        event.reply("already got %s" % url)
-        return
+    for _fn, res in Storage.find("rss", {"rss": url}):
+        if res:
+            event.reply("already got %s" % url)
+            return
     feed = Rss()
     feed.rss = event.args[0]
-    save(feed)
-    event.done()
+    Storage.save(feed)
+    event.reply("ok")

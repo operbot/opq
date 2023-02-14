@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"default"
+"default if not exists"
 
 
 from .objects import Object
@@ -9,8 +9,8 @@ from .objects import Object
 
 def __dir__():
     return (
-            'Default',
-           )
+            "Default",
+           ) 
 
 
 __all__ = __dir__()

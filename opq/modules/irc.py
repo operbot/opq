@@ -14,15 +14,12 @@ import _thread
 
 
 from ..default import Default
-from ..storage import Db, last, save
 from ..objects import Object, format, keys, update
+from ..message import Message
 from ..utility import elapsed, fntime, locked
-
-
-from ..runtime.command import Command
-from ..runtime.event import Event
-from ..runtime.handler import Handler
-from ..runtime.thread import launch
+from ..handler import Handler
+from ..runtime import launch
+from ..storage import Storage
 
 
 def __dir__():
@@ -60,17 +57,17 @@ class NoUser(Exception):
 
 class Config(Default):
 
-    channel = "#opq"
+    channel = "#operbot"
     control = "!"
-    nick = "opq"
+    nick = "operbot"
     password = ""
     port = 6667
-    realname = "opq"
+    realname = "operator bot"
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = "opq"
+    username = "operbot"
     users = False
 
     def __init__(self):
@@ -88,14 +85,6 @@ class Config(Default):
         self.username = Config.username
         self.users = Config.users
 
-
-class IEvent(Event):
-
-    def __init__(self):
-        Event.__init__(self)
-        self.args = []
-        self.arguments = []
-        self.type = "event"
 
 
 class TextWrap(textwrap.TextWrapper):
@@ -381,7 +370,7 @@ class IRC(Handler, Output):
         rawstr = str(txt)
         rawstr = rawstr.replace("\u0001", "")
         rawstr = rawstr.replace("\001", "")
-        obj = IEvent()
+        obj = Message()
         obj.rawstr = rawstr
         obj.command = ""
         obj.arguments = []
@@ -442,7 +431,7 @@ class IRC(Handler, Output):
             except (socket.timeout, ConnectionResetError) as ex:
                 self.joined.clear()
                 time.sleep(5.0)
-                evt = IEvent()
+                evt = Message()
                 evt.txt = str(ex)
                 evt.type = "ERROR"
                 evt.orig = repr(self)
@@ -464,7 +453,7 @@ class IRC(Handler, Output):
             event.txt = " ".join(splitted)
             event.type = "command"
             event.orig = repr(self)
-            Command.dispatch(event)
+            self.dispatch(event)
 
     def quit(self, event):
         if event.orig and event.orig in self.zelf:
@@ -516,7 +505,7 @@ class IRC(Handler, Output):
     def start(self):
         assert self.cfg.nick
         assert self.cfg.server
-        last(self.cfg)
+        Storage.last(self.cfg)
         if self.cfg.channel not in self.channels:
             self.channels.append(self.cfg.channel)
         self.connected.clear()
@@ -557,7 +546,7 @@ class Users(Object):
         for user in Users.get_users(origin):
             try:
                 user.perms.remove(perm)
-                save(user)
+                Storage.save(user)
                 res = True
             except ValueError:
                 pass
@@ -566,7 +555,7 @@ class Users(Object):
     @staticmethod
     def get_users(origin=""):
         selector = {"user": origin}
-        return Db.find("user", selector)
+        return Storage.find("user", selector)
 
     @staticmethod
     def get_user(origin):
@@ -583,7 +572,7 @@ class Users(Object):
             raise NoUser(origin)
         if permission.upper() not in user.perms:
             user.perms.append(permission.upper())
-            save(user)
+            Storage.save(user)
         return user
 
 
@@ -599,7 +588,7 @@ class User(Object):
 
 def cfg(event):
     config = Config()
-    last(config)
+    Storage.last(config)
     if not event.sets:
         event.reply(format(
                                config,
@@ -608,8 +597,8 @@ def cfg(event):
                               )
     else:
         update(config, event.sets)
-        save(config)
-        event.done()
+        Storage.save(config)
+        event.reply("ok")
 
 
 def dlt(event):
@@ -617,17 +606,17 @@ def dlt(event):
         event.reply("dlt <username>")
         return
     selector = {"user": event.args[0]}
-    for obj in Db.find("user", selector):
+    for obj in Storage.find("user", selector):
         obj.__deleted__ = True
-        save(obj)
-        event.done()
+        Storage.save(obj)
+        event.reply("ok")
         break
 
 
 def met(event):
     if not event.args:
         nmr = 0
-        for obj in Db.find("user"):
+        for obj in Storage.find("user"):
             event.reply("%s %s %s %s" % (
                                          nmr,
                                          obj.user,
@@ -641,8 +630,8 @@ def met(event):
     user = User()
     user.user = event.rest
     user.perms = ["USER"]
-    save(user)
-    event.done()
+    Storage.save(user)
+    event.reply("ok")
 
 
 def mre(event):

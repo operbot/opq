@@ -1,8 +1,8 @@
 # This file is placed in the Public Domain.
 
 
-from ..storage import Db, Wd
 from ..objects import format, keys
+from ..storage import Storage
 from ..utility import elapsed, fntime
 
 
@@ -17,7 +17,7 @@ __all__ = __dir__()
 
 def fnd(event):
     if not event.args:
-        res = ",".join(sorted([x.split(".")[-1].lower() for x in Wd.types()]))
+        res = ",".join(sorted([x.split(".")[-1].lower() for x in Storage.files()]))
         if res:
             event.reply(res)
         else:
@@ -30,7 +30,7 @@ def fnd(event):
         keyz = ",".join(keys(event.gets))
     if len(event.args) > 1:
         keyz += "," + ",".join(event.args[1:])
-    for path, obj in Db.all(otype, event.gets):
+    for path, obj in Storage.find(otype, event.gets):
         if not keyz:
             keyz = "," + ",".join(keys(obj))
         txt = "%s %s %s" % (

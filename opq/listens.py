@@ -1,39 +1,33 @@
 # This file is placed in the Public Domain.
 
 
-"bus"
-
-
-from ..objects import Object
+from .objects import Object
 
 
 def __dir__():
     return (
-            'Bus',
+            "Listens",
            ) 
 
 
-__all__ = __dir__()
-
-
-class Bus(Object):
+class Listens(Object):
 
     objs = []
 
     @staticmethod
     def add(obj):
-        if repr(obj) not in [repr(x) for x in Bus.objs]:
-            Bus.objs.append(obj)
+        if repr(obj) not in [repr(x) for x in Listens.objs]:
+            Listens.objs.append(obj)
 
     @staticmethod
     def announce(txt):
-        for obj in Bus.objs:
+        for obj in Listens.objs:
             obj.announce(txt)
 
     @staticmethod
     def byorig(orig):
         res = None
-        for obj in Bus.objs:
+        for obj in Listens.objs:
             if repr(obj) == orig:
                 res = obj
                 break
@@ -41,7 +35,7 @@ class Bus(Object):
 
     @staticmethod
     def say(orig, txt, channel=None):
-        bot = Bus.byorig(orig)
+        bot = Listens.byorig(orig)
         if bot:
             if channel:
                 bot.say(channel, txt)

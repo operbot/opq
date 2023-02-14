@@ -1,30 +1,32 @@
 # This file is placed in the Public Domain.
 
 
-"parse"
+import threading
 
 
-from ..default import Default
-from ..objects import Object
+from .default import Default
+from .listens import Listens
+from .objects import Object
 
 
 def __dir__():
     return (
-            'Parsed',
+            "Message",
            )
 
 
-__all__ = __dir__()
-
-
-class Parsed(Default):
+class Message(Default):
 
     def __init__(self):
         Default.__init__(self)
+        self.__ready__ = threading.Event()
+        self.__thr__ = None
         self.args = []
         self.gets = Object()
         self.isparsed = False
+        self.result = []
         self.sets = Object()
+        self.type = "command"
         self.toskip = Object()
 
     def parsed(self):
@@ -69,3 +71,16 @@ class Parsed(Default):
             self.txt = self.cmd + " " + self.rest
         else:
             self.txt = self.cmd
+
+    def ready(self):
+        self.__ready__.set()
+
+    def reply(self, txt):
+        self.result.append(txt)
+
+    def show(self):
+        for txt in self.result:
+            Listens.say(self.orig, txt, self.channel)
+
+    def wait(self):
+        self.__ready__.wait()

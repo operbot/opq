@@ -5,12 +5,9 @@ import threading
 import time
 
 
-from ..objects import Object, update
-from ..utility import elapsed, name
-
-
-from ..runtime.bus import Bus
-from ..runtime.command import Command
+from ..objects import Object, name, update
+from ..handler import Handler, Listens
+from ..utility import elapsed
 
 
 def __dir__():
@@ -30,17 +27,17 @@ starttime = time.time()
 
 
 def cmd(event):
-    event.reply(",".join(sorted(Command.cmds)))
+    event.reply(",".join(sorted(Handler.cmds)))
 
 
 def flt(event):
     try:
         index = int(event.args[0])
-        event.reply(Bus.objs[index])
+        event.reply(Listens.objs[index])
         return
     except (KeyError, TypeError, IndexError, ValueError):
         pass
-    event.reply(" | ".join([name(o) for o in Bus.objs]))
+    event.reply(" | ".join([name(o) for o in Listens.objs]))
 
 
 def thr(event):

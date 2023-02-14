@@ -1,24 +1,17 @@
 # This file is placed in the Public Domain.
 
 
-"thread"
-
-
 import queue
 import threading
 
 
-from ..utility import name
-
-
-from .event import Event
-
+from .objects import name
 
 def __dir__():
     return (
-            'Thread',
-            'launch'
-           )
+            "Thread",
+            "launch"
+           ) 
 
 
 __all__ = __dir__()
@@ -27,7 +20,7 @@ __all__ = __dir__()
 class Thread(threading.Thread):
 
     def __init__(self, func, thrname, *args, daemon=True):
-        super().__init__(None, self.run, name, (), {}, daemon=daemon)
+        super().__init__(None, self.run, thrname, (), {}, daemon=daemon)
         self._result = None
         self.name = thrname or name(func)
         self.queue = queue.Queue()
@@ -51,11 +44,7 @@ class Thread(threading.Thread):
 
 
 def launch(func, *args, **kwargs):
-    thrname = kwargs.get("name", None)
-    if not thrname and args and isinstance(args[0], Event):
-        thrname = args[0].txt
-    else:
-        thrname = name(func)
+    thrname = kwargs.get("name", name(func))
     thr = Thread(func, thrname, *args)
     thr.start()
     return thr

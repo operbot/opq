@@ -1,39 +1,26 @@
 # This file is placed in the Public Domain.
 
 
-"json encoder/decoder"
+"object encoder"
 
 
 import json
-import _thread
 
 
-from .objects import Object, update
-from .utility import cdir, locked
+from .objects import Object
+from .decoder import disklock
+from .utility import locked
 
 
 def __dir__():
     return (
-            'ObjectDecoder',
             'ObjectEncoder',
             'dump',
-            'dumps',
-            'load',
-            'loads'
-           )
+            'dumps'
+           ) 
+
 
 __all__ = __dir__()
-
-
-disklock = _thread.allocate_lock()
-
-
-class ObjectDecoder(json.JSONDecoder):
-
-
-    def decode(self, s, _w=None):
-        value = json.loads(s)
-        return Object(value)
 
 
 class ObjectEncoder(json.JSONEncoder):
@@ -58,25 +45,37 @@ class ObjectEncoder(json.JSONEncoder):
 
 
 @locked(disklock)
-def dump(obj, opath):
-    cdir(opath)
-    with open(opath, "w", encoding="utf-8") as ofile:
-        json.dump(
-            obj.__dict__, ofile, cls=ObjectEncoder, indent=4, sort_keys=True
-        )
-    return opath
+def dump(obj, fnm, *args, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, default=None, sort_keys=False, **kw):
+    return json.dump(
+                     obj,
+                     fnm,
+                     *args,
+                     skipkeys=skipkeys,
+                     ensure_ascii=ensure_ascii,
+                     check_circular=check_circular,
+                     allow_nan=allow_nan,
+                     cls=cls or ObjectEncoder,
+                     indent=indent,
+                     separators=separators,
+                     default=default,
+                     sort_keys=sort_keys,
+                     **kw
+                    )
 
 
-def dumps(obj):
-    return json.dumps(obj, cls=ObjectEncoder)
 
-
-@locked(disklock)
-def load(obj, opath):
-    with open(opath, "r", encoding="utf-8") as ofile:
-        res = json.load(ofile, cls=ObjectDecoder)
-        update(obj, res)
-
-
-def loads(jsonstr):
-    return json.loads(jsonstr, cls=ObjectDecoder)
+def dumps(obj, *args, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, default=None, sort_keys=False, **kw):
+    return json.dumps(
+                      obj,
+                      *args,
+                      skipkeys=skipkeys,
+                      ensure_ascii=ensure_ascii,
+                      check_circular=check_circular,
+                      allow_nan=allow_nan,
+                      cls=cls or ObjectEncoder,
+                      indent=indent,
+                      separators=separators,
+                      default=default,
+                      sort_keys=sort_keys,
+                      **kw
+                     )
