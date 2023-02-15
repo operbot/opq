@@ -2,21 +2,17 @@
 
 
 import os
-import json
-import _thread
 
 
 from .decoder import load
 from .encoder import dump
 from .objects import Object, items, kind, oid, search, update
-from .utility import cdir, fnclass, fntime, locked
+from .utility import cdir, fnclass, fntime
 
 
 def __dir__():
     return (
             'Storage',
-            'last',
-            'save'
            )
 
 
@@ -85,7 +81,7 @@ class Storage:
         if not cls:
             raise NoClass(fqn)
         obj = cls()
-        with open(otp, "r") as ofile:
+        with open(otp, "r", encoding="utf-8") as ofile:
             dct = load(ofile)
             update(obj, dct)
         return obj
@@ -109,7 +105,7 @@ class Storage:
         if not opath:
             opath = Storage.path(oid(obj))
         cdir(opath)
-        with open(opath, "w") as ofile:
+        with open(opath, "w", encoding="utf-8") as ofile:
             dump(obj, ofile)
         return opath
 

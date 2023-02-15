@@ -18,28 +18,27 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from opq.dbs import Classes
-from opq.obj import Object
-from opq.utl import elapsed, locked
-from opq.wdr import Wd
-
-
-from opr.cfg import Config
-from opr.cmd import Commands
-from opr.evt import Event
-from opr.hdl import Handler
-from opr.scn import scan
-from opr.thr import launch
+from opq.default import Default
+from opq.message import Message
+from opq.objects import Object, update
+from opq.handler import Handler, scan
+from opq.modules import cmd, fnd, irc, rss, tdo
+from opq.runtime import launch
+from opq.storage import Storage
+from opq.utility import elapsed, include, locked, spl, wait
 
 
 paylock = _thread.allocate_lock()
 
 
-Cfg = Config()
+Cfg = Default()
+
 
 Cfg.debug = True
 Cfg.name = "tinder"
-Wd.workdir = ".test"
+
+
+Storage.workdir = ".test"
 
 
 errors = []
@@ -114,11 +113,11 @@ def doskip(txt):
 
 @locked(paylock)
 def payload(clt):
-    cmds = sorted(Commands.cmds)
+    cmds = sorted(Handler.cmds)
     nmr = 0
     for cmnd in cmds:
         for ex in getattr(param, cmnd, [""]):
-            evt = Event()
+            evt = Message()
             evt.txt = cmnd + " " + ex
             evt.orig = repr(clt)
             evt.parse(evt.txt)
@@ -175,7 +174,7 @@ def wrap(func):
         cprint("")
     finally:
         termios.tcsetattr(fds, termios.TCSADRAIN, old)
-        for ex in Commands.errors:
+        for ex in Handler.errors:
             if doskip(str(ex)):
                 continue
             traceback.print_exception(type(ex), ex, ex.__traceback__)
@@ -184,15 +183,13 @@ def wrap(func):
 def main():
     date = time.ctime(time.time()).replace("  ", " ")
     print(f"TINDER started {date}")
-    Cfg.parse(" ".join(sys.argv[1:]))
-    if os.path.exists(Wd.workdir):
-        shutil.rmtree(Wd.workdir)
-    Cfg.parse(" ".join(sys.argv[1:]))
-    if os.path.exists("mod"):
-        from mod import cmd, irc, log, rss
-        rss.debug = True
-        print("\n".join([str(x) for x in scandir("mod")]))
-        print(",".join(Commands.cmds))
+    cfg = Message()
+    cfg.parse(" ".join(sys.argv[1:]))
+    update(Cfg, cfg)
+    if os.path.exists(Storage.workdir):
+        shutil.rmtree(Storage.workdir)
+    rss.debug = True
+    print(",".join(Handler.cmds))
     cli = CLI()
     nrs = Cfg.index or 1
     starttime = time.time()
