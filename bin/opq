@@ -2,11 +2,10 @@
 # This file is placed in the Public Domain.
 
 
-"object programming runtime"
+"object programming bot"
 
 
 import os
-import readline
 import sys
 import termios
 import time
@@ -17,41 +16,29 @@ sys.path.insert(0, os.getcwd())
 
 
 from opq.default import Default
-from opq.storage import Wd
+from opq.message import Message
+from opq.objects import update
+from opq.handler import Handler
+from opq.modules import cmd, fnd, irc, rss, tdo
+from opq.runtime import launch
+from opq.storage import Storage
+from opq.utility import wait
 
 
-from opq.runtime.bus import Bus
-from opq.runtime.config import Config
-from opq.runtime.command import Command
-from opq.runtime.event import Event
-from opq.runtime.handler import Handler
-from opq.runtime.scanner import scan
-from opq.runtime.thread import launch
-from opq.runtime.utils import privileges, wait
-
-
-from opq.modules import cmd, fnd, irc, log, rss
-
-
-Cfg = Config()
-Wd.workdir = os.path.expanduser("~/.opq")
-
-
-scan(cmd)
-scan(fnd)
-scan(irc)
-scan(log)
-scan(rss)
+Cfg = Default()
+Storage.workdir = os.path.expanduser("~/.opq")
 
 
 class CLI(Handler):
 
-    @staticmethod
-    def announce(txt):
+    def __init__(self):
+        Handler.__init__(self)
+        self.register("command", self.dispatch)
+
+    def announce(self, txt):
         pass
 
-    @staticmethod
-    def raw(txt):
+    def raw(self, txt):
         print(txt)
         sys.stdout.flush()
 
@@ -59,37 +46,22 @@ class CLI(Handler):
 class Console(CLI):
 
     def handle(self, event):
-        Command.dispatch(event)
-        event.wait()
+        self.dispatch(event)
+        #event.wait()
 
     def poll(self):
-        event = Event()
-        event.orig = repr(self)
+        event = Message()
         event.txt = input("> ")
         return event
 
 
-def daemon():
-    pid = os.fork()
-    if pid != 0:
-        os._exit(0)
-    os.setsid()
-    os.umask(0)
-    sis = open("/dev/null", 'r')
-    os.dup2(sis.fileno(), sys.stdin.fileno())
-    sos = open("/dev/null", 'a+')
-    ses = open("/dev/null", 'a+')
-    os.dup2(sos.fileno(), sys.stdout.fileno())
-    os.dup2(ses.fileno(), sys.stderr.fileno())
-
-
 def waiter():
     got = []
-    for ex in Command.errors:
+    for ex in Handler.errors:
         traceback.print_exception(type(ex), ex, ex.__traceback__)
         got.append(ex)
     for exc in got:
-        Command.errors.remove(exc)
+        Handler.errors.remove(exc)
 
 
 def wrap(func):
@@ -110,28 +82,25 @@ def wrap(func):
 
 
 def main():
-    Cfg.parse(" ".join(sys.argv[1:]))
-    if Cfg.txt:
-        e = Event()
-        e.type = "command"
-        e.txt = Cfg.otxt
-        cli = CLI()
+    e = Message()
+    e.type = "command"
+    e.parse(" ".join(sys.argv[1:]))
+    cli = CLI()
+    cli.scan(cmd)
+    cli.scan(fnd)
+    cli.scan(irc)
+    cli.scan(rss)
+    cli.scan(tdo)
+    if e.txt:
         cli.handle(e)
-        Cfg.wait = False
-        e.wait()
-    elif "d" in Cfg.opts:
-        privileges("opq")
-        daemon()
-        Cfg.wait = True
-    elif "c" in Cfg.opts:
+    elif "c" in e.opts:
         date = time.ctime(time.time()).replace("  ", " ")
         print(f"OPQ started {date}")
-        csl = Console()
-        csl.start()
         irc.init()
         rss.init()
-        Cfg.wait = True
-    if Cfg.wait:
+        csl = Console()
+        csl.clone(cli)
+        launch(csl.start)
         wait(waiter)
 
 

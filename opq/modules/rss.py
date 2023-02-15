@@ -290,7 +290,7 @@ def dpl(event):
     for fnm, feed in Storage.find("rss", {"rss": event.args[0]}):
         if feed:
             update(feed, setter)
-            Storage.dump(feed, fnm)
+            Storage.save(feed, fnm)
     event.reply("ok")
 
 
@@ -315,7 +315,7 @@ def nme(event):
     for fnm, feed in Storage.find("rss", selector):
         if feed:
             feed.name = event.args[1]
-            Storage.dump(feed, fnm)
+            Storage.save(feed, fnm)
     event.reply("ok")
 
 
@@ -327,7 +327,7 @@ def rem(event):
     for fnm, feed in Storage.find("rss", selector):
         if feed:
             feed.__deleted__ = True
-            Storage.dump(feed, fnm)
+            Storage.save(feed, fnm)
     event.reply("ok")
 
 
@@ -338,7 +338,7 @@ def rss(event):
             event.reply("%s %s %s" % (
                                    nrs,
                                    format(feed),
-                                   elapsed(fntime(fnm))
+                                   elapsed(time.time()-fntime(fnm))
                                   )
                        )
             nrs += 1
