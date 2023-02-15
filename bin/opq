@@ -2,7 +2,7 @@
 # This file is placed in the Public Domain.
 
 
-"object programming bot"
+"object programming queue"
 
 
 import os
@@ -20,8 +20,8 @@ from opq.message import Message
 from opq.objects import update
 from opq.handler import Handler
 from opq.modules import cmd, fnd, irc, rss, tdo
-from opq.runtime import launch
 from opq.storage import Storage
+from opq.threads import launch
 from opq.utility import wait
 
 
@@ -46,8 +46,8 @@ class CLI(Handler):
 class Console(CLI):
 
     def handle(self, event):
-        self.dispatch(event)
-        #event.wait()
+        CLI.handle(self, event)
+        event.wait()
 
     def poll(self):
         event = Message()
@@ -85,6 +85,11 @@ def main():
     e = Message()
     e.type = "command"
     e.parse(" ".join(sys.argv[1:]))
+    update(Cfg, e)
+    if "m" in Cfg.opts:
+        Handler.multi = True
+    elif "t" in Cfg.opts:
+        Handler.threaded = True
     cli = CLI()
     cli.scan(cmd)
     cli.scan(fnd)

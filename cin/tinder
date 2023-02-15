@@ -23,8 +23,8 @@ from opq.message import Message
 from opq.objects import Object, format, update
 from opq.handler import Handler
 from opq.modules import cmd, fnd, irc, rss, tdo
-from opq.runtime import launch
 from opq.storage import Storage
+from opq.threads import launch
 from opq.utility import consume, elapsed, locked, include, spl, wait
 
 
@@ -152,6 +152,7 @@ def main():
                                         (endtime - starttime)/res, len(events))
                                        )
     print(format(Cfg))
-    print(format(Handler))
+    print(format(Handler, "asyncio,threaded"))
+
 
 wrap(main)

@@ -19,6 +19,7 @@ class Message(Default):
 
     def __init__(self):
         Default.__init__(self)
+        self.__await__ = None
         self.__ready__ = threading.Event()
         self.__thr__ = None
         self.args = []
@@ -84,3 +85,4 @@ class Message(Default):
 
     def wait(self):
         self.__ready__.wait()
+        self.__thr__ and self.__thr__.join()

@@ -64,7 +64,7 @@ def format(obj, args="", skip="", plain=False):
         keyz = args.split(",")
     if not keyz:
         keyz = keys(obj)
-    for key in keyz:
+    for key in sorted(keyz):
         if key.startswith("_"):
             continue
         if skip:
