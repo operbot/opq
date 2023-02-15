@@ -31,9 +31,6 @@ def dne(event):
         break
 
 
-Handler.add(dne)
-
-
 def tdo(event):
     if not event.rest:
         nr = 0
@@ -47,6 +44,3 @@ def tdo(event):
     o.txt = event.rest
     Storage.save(o)
     event.reply("ok")
-
-
-Handler.add(tdo)

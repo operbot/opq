@@ -11,9 +11,11 @@ import time
 def __dir__():
     return (
             'cdir',
+            'consume',
             'elapsed',
             'fnclass',
             'fntime',
+            'include',
             'locked',
             'privileges',
             'spl',
@@ -29,6 +31,20 @@ def cdir(path):
     if path.split(os.sep)[-1].count(":") == 2:
         pth = pth.parent
     os.makedirs(pth, exist_ok=True)
+
+
+def consume(evts):
+    fixed = []
+    res = []
+    for evt in evts:
+        evt.wait()
+        fixed.append(evt)
+    for fff in fixed:
+        try:
+            evts.remove(fff)
+        except ValueError:
+            continue
+    return res
 
 
 def elapsed(seconds, short=True):
@@ -95,6 +111,13 @@ def fntime(daystr):
     else:
         tme = 0
     return tme
+
+
+def include(name, namelist):
+    for nme in namelist:
+        if nme in name:
+            return True
+    return False
 
 
 def locked(lock):

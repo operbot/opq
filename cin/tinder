@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
-# pylint: disable=W0611
 
 
 "tinder"
 
 
 import os
+import random
 import shutil
 import sys
 import termios
@@ -20,12 +20,12 @@ sys.path.insert(0, os.getcwd())
 
 from opq.default import Default
 from opq.message import Message
-from opq.objects import Object, update
-from opq.handler import Handler, scan
+from opq.objects import Object, format, update
+from opq.handler import Handler
 from opq.modules import cmd, fnd, irc, rss, tdo
 from opq.runtime import launch
 from opq.storage import Storage
-from opq.utility import elapsed, include, locked, spl, wait
+from opq.utility import consume, elapsed, locked, include, spl, wait
 
 
 paylock = _thread.allocate_lock()
@@ -36,6 +36,13 @@ Cfg = Default()
 
 Cfg.debug = True
 Cfg.name = "tinder"
+
+
+Handler.scan(cmd)
+Handler.scan(fnd)
+Handler.scan(irc)
+Handler.scan(rss)
+Handler.scan(tdo)
 
 
 Storage.workdir = ".test"
@@ -58,9 +65,9 @@ param.dpl = ["reddit title,summary,link", ""]
 param.flt = ["0", ""]
 param.fnd = [
              "cfg",
-             "log",
+             "tdo",
              "rss",
-             "log txt==test",
+             "tdo txt==test",
              "cfg server==localhost",
              "rss rss==reddit"
             ]
@@ -85,84 +92,25 @@ class CLI(Handler):
             cprint(txt)
 
 
-def consume(evts):
-    fixed = []
-    res = []
-    for evt in evts:
-        evt.wait()
-        fixed.append(evt)
-    for fff in fixed:
-        try:
-            evts.remove(fff)
-        except ValueError:
-            continue
-    return res
-
-
 def cprint(txt):
     print(txt)
     sys.stdout.flush()
 
 
-def doskip(txt):
-    for skp in SKIP:
-        if skp in txt:
-            return True
-    return False
-
-
 @locked(paylock)
 def payload(clt):
     cmds = sorted(Handler.cmds)
+    random.shuffle(cmds)
     nmr = 0
     for cmnd in cmds:
         for ex in getattr(param, cmnd, [""]):
             evt = Message()
             evt.txt = cmnd + " " + ex
             evt.orig = repr(clt)
-            evt.parse(evt.txt)
             clt.dispatch(evt)
             events.append(evt)
             nmr += 1
     return nmr
-
-
-def listmod(path):
-    res = []
-    if not os.path.exists(path):
-        return res
-    for fnm in os.listdir(path):
-        if fnm.endswith("~") or fnm.startswith("__"):
-            continue
-        res.append(fnm.split(os.sep)[-1][:-3])
-    return res
-
-
-def scandir(path, pname=None, enable=None,  disable=None, init=None):
-    res = []
-    thrs = []
-    if pname is None:
-        pname = path.split(os.sep)[-1]
-    for modname in listmod(path):
-        skip = False
-        if not modname:
-            skip = True
-        if disable and include(modname, spl(disable)):
-            continue
-        if enable and not include(modname, spl(enable)):
-            skip = True
-        if skip:
-            continue
-        mname = "%s.%s" % (pname, modname)
-        mod = sys.modules.get(mname, None)
-        if mod:
-            scan(mod)
-            if init and "init" in dir(mod):
-                thrs.append(launch(mod.init))
-            res.append(mod)
-    for thr in thrs:
-        thr.join()
-    return res
 
 
 def wrap(func):
@@ -175,8 +123,6 @@ def wrap(func):
     finally:
         termios.tcsetattr(fds, termios.TCSADRAIN, old)
         for ex in Handler.errors:
-            if doskip(str(ex)):
-                continue
             traceback.print_exception(type(ex), ex, ex.__traceback__)
 
 
@@ -189,7 +135,6 @@ def main():
     if os.path.exists(Storage.workdir):
         shutil.rmtree(Storage.workdir)
     rss.debug = True
-    print(",".join(Handler.cmds))
     cli = CLI()
     nrs = Cfg.index or 1
     starttime = time.time()
@@ -197,15 +142,16 @@ def main():
     res = 1
     for _nr in range(nrs):
         waiters.append(launch(payload, cli, name=_nr))
+    consume(events)
     for wtr in waiters:
         res += wtr.join() or 0
-    consume(events)
     endtime = time.time()
     print("%s %s %s (%s remaining)" %  (
                                         elapsed(endtime - starttime),
                                         res,
                                         (endtime - starttime)/res, len(events))
                                        )
-
+    print(format(Cfg))
+    print(format(Handler))
 
 wrap(main)

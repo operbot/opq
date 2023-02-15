@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"Big Object"
+"object programming queue"
 
 
 from setuptools import setup
@@ -13,7 +13,7 @@ def read():
 
 setup(
     name="opq",
-    version="3",
+    version="10",
     author="Bart Thate",
     author_email="operbot100@gmail.com",
     url="http://github.com/operbot/opq",

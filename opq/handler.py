@@ -24,7 +24,7 @@ class Handler(Object):
 
     cmds = Object()
     errors = []
-    threaded = False
+    threaded = True
 
     def __init__(self):
         Object.__init__(self)
@@ -84,13 +84,14 @@ class Handler(Object):
     def register(self, typ, cbs):
         setattr(self.cbs, typ, cbs)
 
-    def scan(self, mod):
+    @staticmethod
+    def scan(mod):
         for key, cmd in inspect.getmembers(mod, inspect.isfunction):
             if key.startswith("cb"):
                 continue
             names = cmd.__code__.co_varnames
             if "event" in names:
-                register(self.cmds, key, cmd)
+                register(Handler.cmds, key, cmd)
 
     def stop(self):
         self.stopped.set()
