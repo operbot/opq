@@ -14,7 +14,7 @@ import _thread
 
 
 from ..default import Default
-from ..objects import Object, format, keys, update
+from ..objects import Object, format, keys, name, update
 from ..message import Message
 from ..utility import elapsed, fntime, locked
 from ..handler import Handler
@@ -511,7 +511,7 @@ class IRC(Handler, Output):
         self.connected.clear()
         self.joined.clear()
         Output.start(self)
-        launch(Handler.start, self)
+        launch(Handler.start, self, name=name(self.start))
         launch(
                self.doconnect,
                self.cfg.server,

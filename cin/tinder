@@ -21,7 +21,7 @@ sys.path.insert(0, os.getcwd())
 from opq.default import Default
 from opq.message import Message
 from opq.objects import Object, format, update
-from opq.handler import Handler
+from opq.handler import Handler, dispatch, scan
 from opq.modules import cmd, fnd, irc, rss, tdo
 from opq.storage import Storage
 from opq.threads import launch
@@ -38,11 +38,11 @@ Cfg.debug = True
 Cfg.name = "tinder"
 
 
-Handler.scan(cmd)
-Handler.scan(fnd)
-Handler.scan(irc)
-Handler.scan(rss)
-Handler.scan(tdo)
+scan(cmd)
+scan(fnd)
+scan(irc)
+scan(rss)
+scan(tdo)
 
 
 Storage.workdir = ".test"
@@ -107,7 +107,7 @@ def payload(clt):
             evt = Message()
             evt.txt = cmnd + " " + ex
             evt.orig = repr(clt)
-            clt.dispatch(evt)
+            dispatch(evt)
             events.append(evt)
             nmr += 1
     return nmr
@@ -152,7 +152,6 @@ def main():
                                         (endtime - starttime)/res, len(events))
                                        )
     print(format(Cfg))
-    print(format(Handler, "asyncio,threaded"))
 
 
 wrap(main)

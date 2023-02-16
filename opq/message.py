@@ -19,7 +19,6 @@ class Message(Default):
 
     def __init__(self):
         Default.__init__(self)
-        self.__await__ = None
         self.__ready__ = threading.Event()
         self.__thr__ = None
         self.args = []

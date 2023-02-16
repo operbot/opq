@@ -9,12 +9,17 @@ import threading
 
 from .listens import Listens
 from .objects import Object, register, update
+from .message import Message
 from .threads import launch
 
 
 def __dir__():
     return (
             "Handler",
+            'clone',
+            'dispatch',
+            'parse_cli',
+            'scan'
            ) 
 
 
@@ -25,49 +30,25 @@ class Handler(Object):
 
     cmds = Object()
     errors = []
-    threaded = True
 
     def __init__(self):
         Object.__init__(self)
         self.cbs = Object()
         self.queue = queue.Queue()
         self.stopped = threading.Event()
-        register(self.cbs, "command", self.dispatch)
+        register(self.cbs, "command", dispatch)
         Listens.add(self)
 
     @staticmethod
     def add(cmd):
         setattr(Handler.cmds, cmd.__name__, cmd)
 
-    def clone(self, other):
-        update(self.cmds, other.cmds)
-
-    def dispatch(self, event):
-        if not event.isparsed:
-            event.parse(event.txt)
-        if not event.orig:
-            event.orig = repr(self)
-        func = getattr(Handler.cmds, event.cmd, None)
-        if func:
-            try:
-                func(event)
-            except Exception as ex:
-                exc = ex.with_traceback(ex.__traceback__)
-                Handler.errors.append(exc)
-                event.ready()
-                return None
-            event.show()
-        event.ready()
-
     def handle(self, event):
         func = getattr(self.cbs, event.type, None)
         if not func:
             event.ready()
             return
-        if Handler.threaded:
-            event.__thr__ = launch(func, event)
-        else:
-            func(event)
+        event.__thr__ = launch(func, event)
 
     def loop(self):
         while not self.stopped.set():
@@ -84,18 +65,45 @@ class Handler(Object):
     def register(self, typ, cbs):
         setattr(self.cbs, typ, cbs)
 
-    @staticmethod
-    def scan(mod):
-        for key, cmd in inspect.getmembers(mod, inspect.isfunction):
-            if key.startswith("cb"):
-                continue
-            names = cmd.__code__.co_varnames
-            if "event" in names:
-                register(Handler.cmds, key, cmd)
-
     def stop(self):
         self.stopped.set()
 
     def start(self):
         self.stopped.clear()
         self.loop()
+
+
+def clone(obj, other):
+    update(obj.cmds, other.cmds)
+
+
+def dispatch(event):
+    if not event.isparsed:
+        event.parse(event.txt)
+    func = getattr(Handler.cmds, event.cmd, None)
+    if func:
+        try:
+            func(event)
+        except Exception as ex:
+            exc = ex.with_traceback(ex.__traceback__)
+            Handler.errors.append(exc)
+            event.ready()
+            return None
+        event.show()
+    event.ready()
+
+
+def parse_cli(txt):
+    e = Message()
+    e.type = "command"
+    e.parse(txt)
+    return e
+
+
+def scan(mod):
+    for key, cmd in inspect.getmembers(mod, inspect.isfunction):
+        if key.startswith("cb"):
+            continue
+        names = cmd.__code__.co_varnames
+        if "event" in names:
+            register(Handler.cmds, key, cmd)

@@ -6,6 +6,7 @@
 
 
 import os
+import readline
 import sys
 import termios
 import time
@@ -18,7 +19,7 @@ sys.path.insert(0, os.getcwd())
 from opq.default import Default
 from opq.message import Message
 from opq.objects import update
-from opq.handler import Handler
+from opq.handler import Handler, parse_cli, scan
 from opq.modules import cmd, fnd, irc, rss, tdo
 from opq.storage import Storage
 from opq.threads import launch
@@ -29,11 +30,14 @@ Cfg = Default()
 Storage.workdir = os.path.expanduser("~/.opq")
 
 
-class CLI(Handler):
+scan(cmd)
+scan(fnd)
+scan(irc)
+scan(rss)
+scan(tdo)
 
-    def __init__(self):
-        Handler.__init__(self)
-        self.register("command", self.dispatch)
+
+class CLI(Handler):
 
     def announce(self, txt):
         pass
@@ -82,29 +86,18 @@ def wrap(func):
 
 
 def main():
-    e = Message()
-    e.type = "command"
-    e.parse(" ".join(sys.argv[1:]))
-    update(Cfg, e)
-    if "m" in Cfg.opts:
-        Handler.multi = True
-    elif "t" in Cfg.opts:
-        Handler.threaded = True
+    cfg = parse_cli(" ".join(sys.argv[1:]))
     cli = CLI()
-    cli.scan(cmd)
-    cli.scan(fnd)
-    cli.scan(irc)
-    cli.scan(rss)
-    cli.scan(tdo)
-    if e.txt:
-        cli.handle(e)
-    elif "c" in e.opts:
+    if cfg.txt:
+        cfg.type = "command"
+        cfg.orig = repr(cli)
+        cli.handle(cfg)
+    elif "c" in cfg.opts:
         date = time.ctime(time.time()).replace("  ", " ")
         print(f"OPQ started {date}")
         irc.init()
         rss.init()
         csl = Console()
-        csl.clone(cli)
         launch(csl.start)
         wait(waiter)
 
