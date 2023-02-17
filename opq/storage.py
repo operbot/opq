@@ -50,7 +50,11 @@ class Storage:
     def find(otp, selector=None):
         if selector is None:
             selector = {}
-        for typ in Storage.types(otp):
+        if "." in otp:
+            tps = [otp]
+        else:
+            tps = Storage.types(otp)
+        for typ in tps:
             for fnm in Storage.fns(typ):
                 obj = Storage.hook(fnm)
                 if "__deleted__" in obj and obj.__deleted__:
@@ -107,7 +111,7 @@ class Storage:
         cdir(opath)
         with open(opath, "w", encoding="utf-8") as ofile:
             dump(obj, ofile)
-        return opath
+        return os.path.abspath(opath)
 
     @staticmethod
     def types(oname=None):

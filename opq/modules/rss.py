@@ -14,12 +14,12 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from ..objects import Object, format, name, update
-from ..utility import fntime, locked
-from ..handler import Listens
-from ..storage import Storage
-from ..threads import launch
-from ..utility import elapsed, spl
+from opv.objects import Object, format, name, update
+from opr.utility import fntime, locked
+from opr.handler import Listens
+from opr.threads import launch
+from opr.storage import Storage
+from opr.utility import elapsed, spl
 
 
 def __dir__():
@@ -290,7 +290,7 @@ def dpl(event):
     for fnm, feed in Storage.find("rss", {"rss": event.args[0]}):
         if feed:
             update(feed, setter)
-            Storage.save(feed, fnm)
+            Storage.dump(feed, fnm)
     event.reply("ok")
 
 
@@ -315,7 +315,7 @@ def nme(event):
     for fnm, feed in Storage.find("rss", selector):
         if feed:
             feed.name = event.args[1]
-            Storage.save(feed, fnm)
+            Storage.dump(feed, fnm)
     event.reply("ok")
 
 
@@ -327,7 +327,7 @@ def rem(event):
     for fnm, feed in Storage.find("rss", selector):
         if feed:
             feed.__deleted__ = True
-            Storage.save(feed, fnm)
+            Storage.dump(feed, fnm)
     event.reply("ok")
 
 
@@ -338,7 +338,7 @@ def rss(event):
             event.reply("%s %s %s" % (
                                    nrs,
                                    format(feed),
-                                   elapsed(time.time()-fntime(fnm))
+                                   elapsed(fntime(fnm))
                                   )
                        )
             nrs += 1

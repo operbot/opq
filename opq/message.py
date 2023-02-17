@@ -17,8 +17,8 @@ def __dir__():
 
 class Message(Default):
 
-    def __init__(self):
-        Default.__init__(self)
+    def __init__(self, *args, **kwargs):
+        Default.__init__(self, *args, **kwargs)
         self.__ready__ = threading.Event()
         self.__thr__ = None
         self.args = []
@@ -84,4 +84,4 @@ class Message(Default):
 
     def wait(self):
         self.__ready__.wait()
-        self.__thr__ and self.__thr__.join()
+        return self.__thr__ and self.__thr__.join()

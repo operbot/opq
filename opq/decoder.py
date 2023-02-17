@@ -1,15 +1,10 @@
 # This file is placed in the Public Domain.
 
 
-"object decoder"
-
-
 import json
-import _thread
 
 
-from .objects import Object
-from .utility import locked
+from .objects import Object, locked, olock
 
 
 def __dir__():
@@ -21,9 +16,6 @@ def __dir__():
            )
 
 
-disklock = _thread.allocate_lock()
-
- 
 class ObjectDecoder(json.JSONDecoder):
 
 
@@ -33,7 +25,7 @@ class ObjectDecoder(json.JSONDecoder):
 
 
 
-@locked(disklock)
+@locked(olock)
 def load(fnm, *args, cls=None, object_hook=None, parse_float=None, parse_int=None, parse_constant=None, object_pairs_hook=None, **kw):
     return json.load(
                      fnm,

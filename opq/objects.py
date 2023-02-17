@@ -1,13 +1,14 @@
 # This file is placed in the Public Domain.
 
 
-"Big Object"
-
-
 import datetime
 import os
 import types
 import uuid
+import _thread
+
+
+from functools import wraps
 
 
 def __dir__():
@@ -28,6 +29,29 @@ def __dir__():
 
 
 __all__ = __dir__()
+
+
+olock = _thread.allocate_lock()
+
+
+def locked(lock):
+
+    def lockeddec(func, *args, **kwargs):
+
+        @wraps(func)
+        def lockedfunc(*args, **kwargs):
+            lock.acquire()
+            res = None
+            try:
+                res = func(*args, **kwargs)
+            finally:
+                lock.release()
+            return res
+
+        return lockedfunc
+
+    return lockeddec
+
 
 
 class Object:
@@ -132,7 +156,7 @@ def oid(obj):
                        )
 
 
-def register(obj, key, value):
+def register(obj, key, value) -> None:
     setattr(obj, key, value)
 
 

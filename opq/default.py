@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"default if not exists"
-
-
 from .objects import Object
 
 
@@ -20,8 +17,8 @@ class Default(Object):
 
     __slots__ = ("__default__",)
 
-    def __init__(self):
-        Object.__init__(self)
+    def __init__(self, *args, **kwargs):
+        Object.__init__(self, *args, **kwargs)
         self.__default__ = ""
 
     def __getattr__(self, key):

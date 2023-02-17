@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-import asyncio
 import inspect
 import queue
 import threading
@@ -17,6 +16,7 @@ def __dir__():
     return (
             "Handler",
             'clone',
+            'command',
             'dispatch',
             'parse_cli',
             'scan'
@@ -36,12 +36,8 @@ class Handler(Object):
         self.cbs = Object()
         self.queue = queue.Queue()
         self.stopped = threading.Event()
-        register(self.cbs, "command", dispatch)
+        self.register("command", dispatch)
         Listens.add(self)
-
-    @staticmethod
-    def add(cmd):
-        setattr(Handler.cmds, cmd.__name__, cmd)
 
     def handle(self, event):
         func = getattr(self.cbs, event.type, None)
@@ -65,16 +61,28 @@ class Handler(Object):
     def register(self, typ, cbs):
         setattr(self.cbs, typ, cbs)
 
+    def restart(self):
+        self.stop()
+        self.start()
+
     def stop(self):
         self.stopped.set()
 
     def start(self):
         self.stopped.clear()
-        self.loop()
+        launch(self.loop)
 
 
 def clone(obj, other):
     update(obj.cmds, other.cmds)
+
+
+def command(cli, txt):
+    e = Message()
+    e.parse(txt)
+    e.orig = repr(cli)
+    dispatch(e)
+    return e
 
 
 def dispatch(event):
