@@ -4,9 +4,9 @@
 import unittest
 
 
-from opb.decoder import loads
-from opb.encoder import dumps
-from opb.objects import Object
+from opq.decoder import loads
+from opq.encoder import dumps
+from opq.objects import Object
 
 
 class TestDecoder(unittest.TestCase):
