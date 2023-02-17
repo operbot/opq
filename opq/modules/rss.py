@@ -14,12 +14,12 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from opv.objects import Object, format, name, update
-from opr.utility import fntime, locked
-from opr.handler import Listens
-from opr.threads import launch
-from opr.storage import Storage
-from opr.utility import elapsed, spl
+from opq.objects import Object, format, name, update
+from opq.utility import fntime, locked
+from opq.handler import Listens
+from opq.threads import launch
+from opq.storage import Storage
+from opq.utility import elapsed, spl
 
 
 def __dir__():

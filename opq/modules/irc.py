@@ -13,13 +13,13 @@ import threading
 import _thread
 
 
-from opv.default import Default
-from opv.objects import Object, format, keys, update
-from opr.message import Message
-from opr.utility import elapsed, fntime, locked
-from opr.handler import Handler, dispatch
-from opr.threads import launch
-from opr.storage import Storage
+from opq.default import Default
+from opq.objects import Object, format, keys, update
+from opq.message import Message
+from opq.utility import elapsed, fntime, locked
+from opq.handler import Handler, dispatch
+from opq.threads import launch
+from opq.storage import Storage
 
 
 def __dir__():

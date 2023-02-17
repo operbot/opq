@@ -19,14 +19,13 @@ sys.path.insert(0, os.getcwd())
 from opq.default import Default
 from opq.message import Message
 from opq.objects import update
-from opq.handler import Handler, parse_cli, scan
+from opq.handler import Handler, command, parse_cli, scan
 from opq.modules import cmd, fnd, irc, rss, tdo
 from opq.storage import Storage
 from opq.threads import launch
 from opq.utility import wait
 
 
-Cfg = Default()
 Storage.workdir = os.path.expanduser("~/.opq")
 
 
@@ -56,6 +55,7 @@ class Console(CLI):
     def poll(self):
         event = Message()
         event.txt = input("> ")
+        event.orig = repr(self)
         return event
 
 
@@ -86,19 +86,17 @@ def wrap(func):
 
 
 def main():
-    cfg = parse_cli(" ".join(sys.argv[1:]))
+    evt = parse_cli(" ".join(sys.argv[1:]))
     cli = CLI()
-    if cfg.txt:
-        cfg.type = "command"
-        cfg.orig = repr(cli)
-        cli.handle(cfg)
-    elif "c" in cfg.opts:
+    if evt.txt:
+        return command(cli, evt.otxt)
+    elif "c" in evt.opts:
         date = time.ctime(time.time()).replace("  ", " ")
         print(f"OPQ started {date}")
         irc.init()
         rss.init()
         csl = Console()
-        launch(csl.start)
+        csl.start()
         wait(waiter)
 
 
