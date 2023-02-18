@@ -338,7 +338,7 @@ def rss(event):
             event.reply("%s %s %s" % (
                                    nrs,
                                    format(feed),
-                                   elapsed(time.time-fntime(fnm))
+                                   elapsed(time.time()-fntime(fnm))
                                   )
                        )
             nrs += 1

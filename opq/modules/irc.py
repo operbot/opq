@@ -13,16 +13,17 @@ import threading
 import _thread
 
 
-from opq.default import Default
-from opq.objects import Object, format, keys, update
-from opq.message import Message
-from opq.utility import elapsed, fntime, locked
-from opq.handler import Handler
-from opq.threads import launch
-from opq.storage import Storage
+from ..default import Default
+from ..objects import Object, format, keys, update
+from ..message import Message
+from ..utility import elapsed, fntime, locked
+from ..handler import Handler
+from ..threads import launch
+from ..storage import Storage
 
-from opq.modules.opt import Output
-from opq.modules.usr import Users
+
+from .opt import Output
+from .usr import Users
 
 
 def __dir__():

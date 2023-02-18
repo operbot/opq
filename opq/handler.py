@@ -39,7 +39,7 @@ class Handler(Object):
         self.cmds = Object()
         self.queue = queue.Queue()
         self.stopped = threading.Event()
-        self.register("command", dispatch)
+        self.register("command", self.dispatch)
         Listens.add(self)
 
     def clone(self, other):

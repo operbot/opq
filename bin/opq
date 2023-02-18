@@ -19,19 +19,14 @@ sys.path.insert(0, os.getcwd())
 from opq.default import Default
 from opq.message import Message
 from opq.objects import update
-from opq.handler import Handler, command, parse_cli, scan
-from opq.modules import cmd, irc, log, rss, tdo
+from opq.handler import Handler, command, parse_cli
+from opq.modules import cmd, flt, irc, log, rss, tdo, thr
 from opq.storage import Storage
 from opq.threads import launch
 from opq.utility import wait
 
 
 Storage.workdir = os.path.expanduser("~/.opq")
-
-
-scan(cmd)
-scan(log)
-scan(tdo)
 
 
 class CLI(Handler):
@@ -86,16 +81,25 @@ def wrap(func):
 def main():
     evt = parse_cli(" ".join(sys.argv[1:]))
     cli = CLI()
+    cli.scan(cmd)
+    cli.scan(log)
+    cli.scan(tdo)
     if evt.txt:
-        scan(irc)
-        scan(rss)
+        cli.scan(irc)
+        cli.scan(rss)
         return command(cli, evt.otxt)
     elif "c" in evt.opts:
         date = time.ctime(time.time()).replace("  ", " ")
         print(f"OPQ started {date}")
-        irc.init()
+        bot = irc.init()
+        bot.clone(cli) 
         rss.init()
         csl = Console()
+        csl.clone(cli)
+        csl.scan(irc)
+        csl.scan(rss)
+        csl.scan(flt)
+        csl.scan(thr)
         csl.start()
         wait(waiter)
 
