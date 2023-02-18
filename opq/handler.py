@@ -16,9 +16,7 @@ from .threads import launch
 def __dir__():
     return (
             "Handler",
-            'clone',
             'command',
-            'dispatch',
             'parse_cli',
             'scan',
             'starttime'
@@ -33,16 +31,36 @@ starttime = time.time()
 
 class Handler(Object):
 
-    cmds = Object()
     errors = []
 
     def __init__(self):
         Object.__init__(self)
         self.cbs = Object()
+        self.cmds = Object()
         self.queue = queue.Queue()
         self.stopped = threading.Event()
         self.register("command", dispatch)
         Listens.add(self)
+
+    def clone(self, other):
+        update(self.cmds, other.cmds)
+
+    def dispatch(self, event):
+        if not event.isparsed:
+            event.parse(event.txt)
+        if not event.orig:
+            event.orig = repr(self)
+        func = getattr(self.cmds, event.cmd, None)
+        if func:
+            try:
+                func(event)
+            except Exception as ex:
+                exc = ex.with_traceback(ex.__traceback__)
+                Handler.errors.append(exc)
+                event.ready()
+                return None
+            event.show()
+        event.ready()
 
     def handle(self, event):
         func = getattr(self.cbs, event.type, None)
@@ -70,6 +88,14 @@ class Handler(Object):
         self.stop()
         self.start()
 
+    def scan(self, mod):
+        for key, cmd in inspect.getmembers(mod, inspect.isfunction):
+            if key.startswith("cb"):
+                continue
+            names = cmd.__code__.co_varnames
+            if "event" in names:
+                register(self.cmds, key, cmd)
+
     def stop(self):
         self.stopped.set()
 
@@ -78,32 +104,12 @@ class Handler(Object):
         launch(self.loop)
 
 
-def clone(obj, other):
-    update(obj.cmds, other.cmds)
-
-
 def command(cli, txt):
     e = Message()
     e.parse(txt)
     e.orig = repr(cli)
-    dispatch(e)
+    cli.dispatch(e)
     return e
-
-
-def dispatch(event):
-    if not event.isparsed:
-        event.parse(event.txt)
-    func = getattr(Handler.cmds, event.cmd, None)
-    if func:
-        try:
-            func(event)
-        except Exception as ex:
-            exc = ex.with_traceback(ex.__traceback__)
-            Handler.errors.append(exc)
-            event.ready()
-            return None
-        event.show()
-    event.ready()
 
 
 def parse_cli(txt):
@@ -111,12 +117,3 @@ def parse_cli(txt):
     e.type = "command"
     e.parse(txt)
     return e
-
-
-def scan(mod):
-    for key, cmd in inspect.getmembers(mod, inspect.isfunction):
-        if key.startswith("cb"):
-            continue
-        names = cmd.__code__.co_varnames
-        if "event" in names:
-            register(Handler.cmds, key, cmd)

@@ -17,7 +17,7 @@ from opq.default import Default
 from opq.objects import Object, format, keys, update
 from opq.message import Message
 from opq.utility import elapsed, fntime, locked
-from opq.handler import Handler, dispatch
+from opq.handler import Handler
 from opq.threads import launch
 from opq.storage import Storage
 
@@ -372,7 +372,7 @@ class IRC(Handler, Output):
             event.txt = " ".join(splitted)
             event.type = "command"
             event.orig = repr(self)
-            dispatch(event)
+            self.dispatch(event)
 
     def quit(self, event):
         if event.orig and event.orig in self.zelf:

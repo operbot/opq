@@ -33,7 +33,7 @@ def log(event):
             event.reply("%s %s %s" % (
                                       nmr,
                                       obj.txt,
-                                      elapsed(time.time() - fntime(fnm)))
+                                      elapsed(time.time()-fntime(fnm)))
                                      )
             nmr += 1
         if not nmr:

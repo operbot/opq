@@ -35,7 +35,7 @@ def tdo(event):
     if not event.rest:
         nr = 0
         for _fn, o in Storage.find("todo"):
-            event.reply("%s %s %s" % (nr, o.txt, elapsed(time.time() - fntime(_fn))))
+            event.reply("%s %s %s" % (nr, o.txt, elapsed(time.time()-fntime(_fn))))
             nr += 1
         if not nr:
             event.reply("no todo's entered yet.")
