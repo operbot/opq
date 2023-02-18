@@ -11,6 +11,7 @@ from opq.utility import elapsed, fntime
 
 def __dir__():
     return (
+            'NoUser',
             'User',
             'Users',
             "dlt",

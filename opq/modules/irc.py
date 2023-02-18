@@ -21,19 +21,16 @@ from opq.handler import Handler, dispatch
 from opq.threads import launch
 from opq.storage import Storage
 
+from opq.modules.opt import Output
+from opq.modules.usr import Users
+
 
 def __dir__():
     return (
             'Config',
             'IRC',
-            "NoUser",
-            "Users",
-            "User",
             'init',
-            'dlt',
             'cfg',
-            'met',
-            'mre',
             'pwd'
            )
 
@@ -86,85 +83,7 @@ class Config(Default):
         self.users = Config.users
 
 
-
-class TextWrap(textwrap.TextWrapper):
-
-    def __init__(self):
-        super().__init__()
-        self.break_long_words = False
-        self.drop_whitespace = True
-        self.fix_sentence_endings = True
-        self.replace_whitespace = True
-        self.tabsize = 4
-        self.width = 450
-
-
-class Output(Object):
-
-    cache = Object()
-
-    def __init__(self):
-        Object.__init__(self)
-        self.oqueue = queue.Queue()
-        self.dostop = threading.Event()
-
-    def dosay(self, channel, txt):
-        raise NotImplementedError
-
-    def extend(self, channel, txtlist):
-        if channel not in self.cache:
-            setattr(self.cache, channel, [])
-        cache = getattr(self.cache, channel, None)
-        cache.extend(txtlist)
-
-    def gettxt(self, channel):
-        txt = None
-        try:
-            cache = getattr(self.cache, channel, None)
-            txt = cache.pop(0)
-        except (KeyError, IndexError):
-            pass
-        return txt
-
-    def oput(self, channel, txt):
-        if channel not in self.cache:
-            setattr(self.cache, channel, [])
-        self.oqueue.put_nowait((channel, txt))
-
-    def output(self):
-        while not self.dostop.is_set():
-            (channel, txt) = self.oqueue.get()
-            if channel is None and txt is None:
-                break
-            if self.dostop.is_set():
-                break
-            wrapper = TextWrap()
-            try:
-                txtlist = wrapper.wrap(txt)
-            except AttributeError:
-                continue
-            if len(txtlist) > 3:
-                self.extend(channel, txtlist)
-                self.dosay(channel, "%s put in cache, use !mre to show more" % len(txtlist))
-                continue
-            _nr = -1
-            for txt in txtlist:
-                _nr += 1
-                self.dosay(channel, txt)
-
-    def size(self, chan):
-        if chan in self.cache:
-            return len(getattr(self.cache, chan, []))
-        return 0
-
-    def start(self):
-        self.dostop.clear()
-        launch(self.output)
-        return self
-
-    def stop(self):
-        self.dostop.set()
-        self.oqueue.put_nowait((None, None))
+Storage.add(Config)
 
 
 class IRC(Handler, Output):
@@ -529,63 +448,6 @@ class IRC(Handler, Output):
         Handler.stop(self)
 
 
-class Users(Object):
-
-    @staticmethod
-    def allowed(origin, perm):
-        perm = perm.upper()
-        user = Users.get_user(origin)
-        val = False
-        if user and perm in user.perms:
-            val = True
-        return val
-
-    @staticmethod
-    def delete(origin, perm):
-        res = False
-        for user in Users.get_users(origin):
-            try:
-                user.perms.remove(perm)
-                Storage.save(user)
-                res = True
-            except ValueError:
-                pass
-        return res
-
-    @staticmethod
-    def get_users(origin=""):
-        selector = {"user": origin}
-        return Storage.find("user", selector)
-
-    @staticmethod
-    def get_user(origin):
-        users = list(Users.get_users(origin))
-        res = None
-        if len(users) > 0:
-            res = users[-1]
-        return res
-
-    @staticmethod
-    def perm(origin, permission):
-        user = Users.get_user(origin)
-        if not user:
-            raise NoUser(origin)
-        if permission.upper() not in user.perms:
-            user.perms.append(permission.upper())
-            Storage.save(user)
-        return user
-
-
-class User(Object):
-
-    def __init__(self, val=None):
-        Object.__init__(self)
-        self.user = ""
-        self.perms = []
-        if val:
-            update(self, val)
-
-
 def cfg(event):
     config = Config()
     Storage.last(config)
@@ -599,58 +461,6 @@ def cfg(event):
         update(config, event.sets)
         Storage.save(config)
         event.reply("ok")
-
-
-def dlt(event):
-    if not event.args:
-        event.reply("dlt <username>")
-        return
-    selector = {"user": event.args[0]}
-    for obj in Storage.find("user", selector):
-        obj.__deleted__ = True
-        Storage.save(obj)
-        event.reply("ok")
-        break
-
-
-def met(event):
-    if not event.args:
-        nmr = 0
-        for obj in Storage.find("user"):
-            event.reply("%s %s %s %s" % (
-                                         nmr,
-                                         obj.user,
-                                         obj.perms,
-                                         elapsed(time.time() - fntime(obj.__fnm__)))
-                                        )
-            nmr += 1
-        if not nmr:
-            event.reply("no users introduced yet")
-        return
-    user = User()
-    user.user = event.rest
-    user.perms = ["USER"]
-    Storage.save(user)
-    event.reply("ok")
-
-
-def mre(event):
-    if not event.channel:
-        event.reply("channel is not set.")
-        return
-    bot = event.bot()
-    if "cache" not in dir(bot):
-        event.reply("bot is missing cache")
-        return
-    if event.channel not in bot.cache:
-        event.reply("no output in %s cache." % event.channel)
-        return
-    for _x in range(3):
-        txt = bot.gettxt(event.channel)
-        if txt:
-            bot.say(event.channel, txt)
-    size = bot.size(event.channel)
-    event.reply("%s more in cache" % size)
 
 
 def pwd(event):

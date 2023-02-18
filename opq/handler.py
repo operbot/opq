@@ -4,6 +4,7 @@
 import inspect
 import queue
 import threading
+import time
 
 
 from .listens import Listens
@@ -19,11 +20,15 @@ def __dir__():
             'command',
             'dispatch',
             'parse_cli',
-            'scan'
+            'scan',
+            'starttime'
            ) 
 
 
 __all__ = __dir__()
+
+
+starttime = time.time()
 
 
 class Handler(Object):

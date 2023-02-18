@@ -20,7 +20,7 @@ from opq.default import Default
 from opq.message import Message
 from opq.objects import update
 from opq.handler import Handler, command, parse_cli, scan
-from opq.modules import cmd, fnd, irc, rss, tdo
+from opq.modules import cmd, irc, log, rss, tdo
 from opq.storage import Storage
 from opq.threads import launch
 from opq.utility import wait
@@ -30,9 +30,7 @@ Storage.workdir = os.path.expanduser("~/.opq")
 
 
 scan(cmd)
-scan(fnd)
-scan(irc)
-scan(rss)
+scan(log)
 scan(tdo)
 
 
@@ -89,6 +87,8 @@ def main():
     evt = parse_cli(" ".join(sys.argv[1:]))
     cli = CLI()
     if evt.txt:
+        scan(irc)
+        scan(rss)
         return command(cli, evt.otxt)
     elif "c" in evt.opts:
         date = time.ctime(time.time()).replace("  ", " ")
