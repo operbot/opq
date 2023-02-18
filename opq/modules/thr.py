@@ -11,10 +11,7 @@ from opq.utility import elapsed
 
 def __dir__():
     return (
-            'cmd',
-            'flt',
             'thr',
-            'upt'
            )
 
 
