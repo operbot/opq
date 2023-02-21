@@ -11,7 +11,7 @@ from .objects import Object
 
 def __dir__():
     return (
-            "Message",
+            'Message',
            )
 
 
@@ -26,7 +26,7 @@ class Message(Default):
         self.isparsed = False
         self.result = []
         self.sets = Object()
-        self.type = "command"
+        self.type = 'command'
         self.toskip = Object()
 
     def parsed(self):
@@ -39,23 +39,23 @@ class Message(Default):
         args = []
         _nr = -1
         for word in spl:
-            if word.startswith("-"):
+            if word.startswith('-'):
                 try:
                     self.index = int(word[1:])
                 except ValueError:
                     self.opts = self.opts + word[1:2]
                 continue
             try:
-                key, value = word.split("==")
-                if value.endswith("-"):
+                key, value = word.split('==')
+                if value.endswith('-'):
                     value = value[:-1]
-                    setattr(self.toskip, value, "")
+                    setattr(self.toskip, value, '')
                 setattr(self.gets, key, value)
                 continue
             except ValueError:
                 pass
             try:
-                key, value = word.split("=")
+                key, value = word.split('=')
                 setattr(self.sets, key, value)
                 continue
             except ValueError:
@@ -67,8 +67,8 @@ class Message(Default):
             args.append(word)
         if args:
             self.args = args
-            self.rest = " ".join(args)
-            self.txt = self.cmd + " " + self.rest
+            self.rest = ' '.join(args)
+            self.txt = self.cmd + ' ' + self.rest
         else:
             self.txt = self.cmd
 

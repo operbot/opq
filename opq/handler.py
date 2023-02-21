@@ -15,10 +15,9 @@ from .threads import launch
 
 def __dir__():
     return (
-            "Handler",
+            'Handler',
             'command',
             'parse_cli',
-            'scan',
             'starttime'
            ) 
 
@@ -39,7 +38,7 @@ class Handler(Object):
         self.cmds = Object()
         self.queue = queue.Queue()
         self.stopped = threading.Event()
-        self.register("command", self.dispatch)
+        self.register('command', self.dispatch)
         Listens.add(self)
 
     def clone(self, other):
@@ -90,10 +89,10 @@ class Handler(Object):
 
     def scan(self, mod):
         for key, cmd in inspect.getmembers(mod, inspect.isfunction):
-            if key.startswith("cb"):
+            if key.startswith('cb'):
                 continue
             names = cmd.__code__.co_varnames
-            if "event" in names:
+            if 'event' in names:
                 register(self.cmds, key, cmd)
 
     def stop(self):
@@ -114,6 +113,6 @@ def command(cli, txt):
 
 def parse_cli(txt):
     e = Message()
-    e.type = "command"
+    e.type = 'command'
     e.parse(txt)
     return e

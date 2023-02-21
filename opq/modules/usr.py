@@ -4,9 +4,9 @@
 import time
 
 
-from opq.objects import Object, update
-from opq.storage import Storage
-from opq.utility import elapsed, fntime
+from ..objects import Object, update
+from ..storage import Storage
+from ..utility import elapsed, fntime
 
 
 def __dir__():
@@ -14,8 +14,8 @@ def __dir__():
             'NoUser',
             'User',
             'Users',
-            "dlt",
-            "met"
+            'dlt',
+            'met'
            )
 
 
@@ -31,7 +31,7 @@ class User(Object):
 
     def __init__(self, val=None):
         Object.__init__(self)
-        self.user = ""
+        self.user = ''
         self.perms = []
         if val:
             update(self, val)
@@ -64,9 +64,9 @@ class Users(Object):
         return res
 
     @staticmethod
-    def get_users(origin=""):
-        selector = {"user": origin}
-        return Storage.find("user", selector)
+    def get_users(origin=''):
+        selector = {'user': origin}
+        return Storage.find('user', selector)
 
     @staticmethod
     def get_user(origin):
@@ -89,21 +89,21 @@ class Users(Object):
 
 def dlt(event):
     if not event.args:
-        event.reply("dlt <username>")
+        event.reply('dlt <username>')
         return
-    selector = {"user": event.args[0]}
-    for obj in Storage.find("user", selector):
+    selector = {'user': event.args[0]}
+    for obj in Storage.find('user', selector):
         obj.__deleted__ = True
         Storage.save(obj)
-        event.reply("ok")
+        event.reply('ok')
         break
 
 
 def met(event):
     if not event.args:
         nmr = 0
-        for obj in Storage.find("user"):
-            event.reply("%s %s %s %s" % (
+        for obj in Storage.find('user'):
+            event.reply('%s %s %s %s' % (
                                          nmr,
                                          obj.user,
                                          obj.perms,
@@ -111,10 +111,10 @@ def met(event):
                                         )
             nmr += 1
         if not nmr:
-            event.reply("no users introduced yet")
+            event.reply('no users introduced yet')
         return
     user = User()
     user.user = event.rest
-    user.perms = ["USER"]
+    user.perms = ['USER']
     Storage.save(user)
-    event.reply("ok")
+    event.reply('ok')

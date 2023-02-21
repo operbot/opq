@@ -81,26 +81,26 @@ class Object:
 
 
 
-def format(obj, args="", skip="", plain=False):
+def format(obj, args='', skip='', plain=False):
     res = []
     keyz = []
-    if "," in args:
-        keyz = args.split(",")
+    if ',' in args:
+        keyz = args.split(',')
     if not keyz:
         keyz = keys(obj)
     for key in sorted(keyz):
-        if key.startswith("_"):
+        if key.startswith('_'):
             continue
         if skip:
-            skips = skip.split(",")
+            skips = skip.split(',')
             if key in skips:
                 continue
         value = getattr(obj, key, None)
         if not value:
             continue
-        if " object at " in str(value):
+        if ' object at ' in str(value):
             continue
-        txt = ""
+        txt = ''
         if plain:
             value = str(value)
         if isinstance(value, str) and len(value.split()) >= 2:
@@ -108,7 +108,7 @@ def format(obj, args="", skip="", plain=False):
         else:
             txt = f'{key}={value}'
         res.append(txt)
-    txt = " ".join(res)
+    txt = ' '.join(res)
     return txt.strip()
 
 
@@ -128,7 +128,7 @@ def keys(obj):
 
 def kind(obj):
     kin = str(type(obj)).split()[-1][1:-2]
-    if kin == "type":
+    if kin == 'type':
         kin = obj.__name__
     return kin
 
@@ -137,14 +137,14 @@ def name(obj):
     typ = type(obj)
     if isinstance(typ, types.ModuleType):
         return obj.__name__
-    if "__self__" in dir(obj):
-        return "%s.%s" % (obj.__self__.__class__.__name__, obj.__name__)
-    if "__class__" in dir(obj) and "__name__" in dir(obj):
-        return "%s.%s" % (obj.__class__.__name__, obj.__name__)
-    if "__class__" in dir(obj):
+    if '__self__' in dir(obj):
+        return '%s.%s' % (obj.__self__.__class__.__name__, obj.__name__)
+    if '__class__' in dir(obj) and '__name__' in dir(obj):
+        return '%s.%s' % (obj.__class__.__name__, obj.__name__)
+    if '__class__' in dir(obj):
         return obj.__class__.__name__
-    if "__name__" in dir(obj):
-        return "%s.%s" % (obj.__class__.__name__, obj.__name__)
+    if '__name__' in dir(obj):
+        return '%s.%s' % (obj.__class__.__name__, obj.__name__)
     return None
 
 

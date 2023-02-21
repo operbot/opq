@@ -9,8 +9,8 @@ from .objects import name
 
 def __dir__():
     return (
-            "Thread",
-            "launch"
+            'Thread',
+            'launch'
            ) 
 
 
@@ -44,7 +44,7 @@ class Thread(threading.Thread):
 
 
 def launch(func, *args, **kwargs):
-    thrname = kwargs.get("name", name(func))
+    thrname = kwargs.get('name', name(func))
     thr = Thread(func, thrname, *args)
     thr.start()
     return thr

@@ -6,14 +6,14 @@ import textwrap
 import threading
 
 
-from opq.objects import Object
-from opq.threads import launch
+from ..objects import Object
+from ..threads import launch
 
 
 def __dir__():
     return (
-            "Output",
-            "mre"
+            'Output',
+            'mre'
            )
 
 
@@ -78,7 +78,7 @@ class Output(Object):
                 continue
             if len(txtlist) > 3:
                 self.extend(channel, txtlist)
-                self.dosay(channel, "%s put in cache, use !mre to show more" % len(txtlist))
+                self.dosay(channel, '%s put in cache, use !mre to show more' % len(txtlist))
                 continue
             _nr = -1
             for txt in txtlist:
@@ -102,18 +102,18 @@ class Output(Object):
 
 def mre(event):
     if not event.channel:
-        event.reply("channel is not set.")
+        event.reply('channel is not set.')
         return
     bot = event.bot()
-    if "cache" not in dir(bot):
-        event.reply("bot is missing cache")
+    if 'cache' not in dir(bot):
+        event.reply('bot is missing cache')
         return
     if event.channel not in bot.cache:
-        event.reply("no output in %s cache." % event.channel)
+        event.reply('no output in %s cache.' % event.channel)
         return
     for _x in range(3):
         txt = bot.gettxt(event.channel)
         if txt:
             bot.say(event.channel, txt)
     size = bot.size(event.channel)
-    event.reply("%s more in cache" % size)
+    event.reply('%s more in cach' % size)
