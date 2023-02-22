@@ -5,6 +5,7 @@ import queue
 import threading
 
 
+from .message import Message
 from .objects import name
 
 def __dir__():
@@ -38,7 +39,7 @@ class Thread(threading.Thread):
         super().join(timeout)
         return self._result
 
-    def run(self) -> None:
+    def run(self):
         func, args = self.queue.get()
         self._result = func(*args)
 

@@ -57,7 +57,7 @@ class Handler(Object):
                 exc = ex.with_traceback(ex.__traceback__)
                 Handler.errors.append(exc)
                 event.ready()
-                return None
+                return
             event.show()
         event.ready()
 

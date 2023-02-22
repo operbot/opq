@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"object programming queue"
+"object programming quest"
 
 
 from setuptools import setup
@@ -18,7 +18,7 @@ setup(
     author_email="operbot100@gmail.com",
     url="http://github.com/operbot/opq",
     zip_safe=True,
-    description="object programming queue",
+    description="object programming quest",
     long_description=read(),
     long_description_content_type="text/x-rst",
     license="Public Domain",

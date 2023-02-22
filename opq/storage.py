@@ -2,12 +2,13 @@
 
 
 import os
+import _thread
 
 
 from .decoder import load
 from .encoder import dump
 from .objects import Object, items, kind, oid, search, update
-from .utility import cdir, fnclass, fntime
+from .utility import cdir, fnclass, fntime, locked
 
 
 def __dir__():
@@ -22,6 +23,9 @@ __all__ = __dir__()
 class NoClass(Exception):
 
     pass
+
+
+hooklock = _thread.allocate_lock()
 
 
 class Storage:
@@ -79,6 +83,7 @@ class Storage:
                         yield path2
 
     @staticmethod
+    @locked(hooklock)
     def hook(otp):
         fqn = fnclass(otp)
         cls = getattr(Storage.cls, fqn, None)

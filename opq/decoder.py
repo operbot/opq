@@ -39,6 +39,7 @@ def load(fnm, *args, cls=None, object_hook=None, parse_float=None, parse_int=Non
                      )
 
 
+@locked(olock)
 def loads(s, *args, cls=None, object_hook=None, parse_float=None, parse_int=None, parse_constant=None, object_pairs_hook=None, **kw):
     return json.loads(
                       s,

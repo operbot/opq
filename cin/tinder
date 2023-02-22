@@ -21,8 +21,8 @@ sys.path.insert(0, os.getcwd())
 from opq.default import Default
 from opq.message import Message
 from opq.objects import Object, format, update
-from opq.handler import Handler, dispatch, scan
-from opq.modules import cmd, fnd, irc, rss, tdo
+from opq.handler import Handler
+from opq.modules import cmd, flt, fnd, irc, log, rss, tdo, thr
 from opq.storage import Storage
 from opq.threads import launch
 from opq.utility import consume, elapsed, locked, include, spl, wait
@@ -36,13 +36,6 @@ Cfg = Default()
 
 Cfg.debug = True
 Cfg.name = "tinder"
-
-
-scan(cmd)
-scan(fnd)
-scan(irc)
-scan(rss)
-scan(tdo)
 
 
 Storage.workdir = ".test"
@@ -99,7 +92,7 @@ def cprint(txt):
 
 @locked(paylock)
 def payload(clt):
-    cmds = sorted(Handler.cmds)
+    cmds = sorted(clt.cmds)
     random.shuffle(cmds)
     nmr = 0
     for cmnd in cmds:
@@ -107,7 +100,7 @@ def payload(clt):
             evt = Message()
             evt.txt = cmnd + " " + ex
             evt.orig = repr(clt)
-            dispatch(evt)
+            clt.dispatch(evt)
             events.append(evt)
             nmr += 1
     return nmr
@@ -136,6 +129,14 @@ def main():
         shutil.rmtree(Storage.workdir)
     rss.debug = True
     cli = CLI()
+    cli.scan(cmd)
+    cli.scan(flt)
+    cli.scan(fnd)
+    cli.scan(irc)
+    cli.scan(log)
+    cli.scan(rss)
+    cli.scan(tdo)
+    cli.scan(thr)
     nrs = Cfg.index or 1
     starttime = time.time()
     waiters = []

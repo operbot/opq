@@ -4,7 +4,7 @@ README
 **NAME**
 
 |
-| ``opq`` - object programming queue
+| ``opq`` - object programming quest
 |
 
 **SYNOPSIS**
@@ -15,8 +15,7 @@ json files on disk. Objects can be searched with database functions and have a
 type in filename for reconstruction. Methods are factored out into functions to
 have a clean namespace to read JSON data into.
 
-This package should result in a Queue derived (or compatible) class that can
-keep objects in sync on a multiprocessor environment.
+This is the quest for object programming, the OOP without the oriented.
 
 |
 

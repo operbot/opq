@@ -60,7 +60,7 @@ class Config(Default):
     nick = 'opq'
     password = ''
     port = 6667
-    realname = 'object programming queue'
+    realname = 'object programming quest'
     sasl = False
     server = 'localhost'
     servermodes = ''
