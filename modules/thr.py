@@ -5,8 +5,8 @@ import threading
 import time
 
 
-from ..objects import Object, name, update
-from ..utility import elapsed
+from opq.objects import Object, update
+from opq.utility import elapsed
 
 
 def __dir__():

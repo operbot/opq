@@ -7,9 +7,11 @@
 import time
 
 
-from ..storage import Storage, find, save
-from ..utility import elapsed, fntime
-from ..objects import Object
+from opq.utility import elapsed, fntime
+from opq.objects import Object
+
+
+from .storage import Storage, find, save
 
 
 def __dir__():

@@ -1,8 +1,8 @@
 # This file is placed in the Public Domain.
 
 
-from ..handler import Listens
-from ..objects import name
+from opq.handler import Listens
+from opq.objects import name
 
 
 def __dir__():

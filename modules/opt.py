@@ -6,8 +6,8 @@ import textwrap
 import threading
 
 
-from ..objects import Object
-from ..threads import launch
+from opq.objects import Object
+from opq.threads import launch
 
 
 def __dir__():

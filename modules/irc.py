@@ -16,14 +16,16 @@ import threading
 import _thread
 
 
-from ..clients import Client
-from ..command import Command
-from ..default import Default
-from ..objects import Object, keys, tostr, update
-from ..message import Message
-from ..utility import elapsed, fntime, locked
-from ..threads import launch
-from ..storage import Storage, find, last, save
+from opq.clients import Client
+from opq.command import Command
+from opq.default import Default
+from opq.objects import Object, keys, tostr, update
+from opq.message import Message
+from opq.utility import elapsed, fntime, locked
+from opq.threads import launch
+
+
+from .storage import Storage, find, last, save
 
 
 def __dir__():

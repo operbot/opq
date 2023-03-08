@@ -9,10 +9,10 @@ import os
 import _thread
 
 
-from .decoder import ObjectDecoder
-from .encoder import ObjectEncoder
-from .objects import Object, items, kind, oid, search, update
-from .utility import cdir, fnclass, fntime, locked
+from opq.decoder import ObjectDecoder
+from opq.encoder import ObjectEncoder
+from opq.objects import Object, items, kind, oid, search, update
+from opq.utility import fnclass, fntime, locked
 
 
 def __dir__():
@@ -26,12 +26,13 @@ def __dir__():
            )
 
 
+
+disklock = _thread.allocate_lock()
+
+
 class NoClass(Exception):
 
     pass
-
-
-disklock = _thread.allocate_lock()
 
 
 class Storage:

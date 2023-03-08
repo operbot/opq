@@ -4,8 +4,8 @@
 "status"
 
 
-from operbot.listens import Listens
-from operbot.objects import tostr
+from opq.listens import Listens
+from opq.objects import tostr
 
 
 def sts(event):

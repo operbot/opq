@@ -1,9 +1,9 @@
 # This file is placed in the Public Domain.
 
 
-from ..objects import format, keys
-from ..storage import Storage
-from ..utility import elapsed, fntime
+from opq.objects import format, keys
+from opq.storage import Storage
+from opq.utility import elapsed, fntime
 
 
 def __dir__():

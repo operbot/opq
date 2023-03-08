@@ -2,7 +2,7 @@
 # This file is placed in the Public Domain.
 
 
-"object programming quest"
+"object programming queue"
 
 
 import os
@@ -13,23 +13,23 @@ import time
 import traceback
 
 
-sys.path.insert(0, os.getcwd())
-
-
-from opq.default import Default
+from opq.clients import Client
+from opq.command import Command, command, scan
+from opq.handler import Handler
+from opq.listens import Listens
 from opq.message import Message
 from opq.objects import update
-from opq.handler import Handler, command, parse_cli
-from opq.modules import cmd, flt, irc, log, rss, tdo, thr
-from opq.storage import Storage
 from opq.threads import launch
 from opq.utility import wait
 
 
-Storage.workdir = os.path.expanduser("~/.opq")
+try:
+    sys.path.insert(0, ".")
+except Exception as ex:
+    traceback.print_exception(type(ex), ex, ex.__traceback__)
 
 
-class CLI(Handler):
+class CLI(Client):
 
     def announce(self, txt):
         pass
@@ -43,14 +43,34 @@ class Console(CLI):
 
     def handle(self, event):
         CLI.handle(self, event)
-        event.wait()
 
     def poll(self):
         event = Message()
-        event.txt = input("> ")
         event.orig = repr(self)
+        event.txt = input("> ")
+        event.parse(event.txt)
         return event
 
+
+def daemon():
+    pid = os.fork()
+    if pid != 0:
+        os._exit(0)
+    os.setsid()
+    os.umask(0)
+    sis = open("/dev/null", 'r')
+    os.dup2(sis.fileno(), sys.stdin.fileno())
+    sos = open("/dev/null", 'a+')
+    ses = open("/dev/null", 'a+')
+    os.dup2(sos.fileno(), sys.stdout.fileno())
+    os.dup2(ses.fileno(), sys.stderr.fileno())
+
+
+def getattr():
+    return termios.tcgetattr(sys.stdin.fileno())
+
+def setattr(old):
+    termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
 
 def waiter():
     got = []
@@ -61,47 +81,49 @@ def waiter():
         Handler.errors.remove(exc)
 
 
-def wrap(func):
-    fds = sys.stdin.fileno()
-    gotterm = True
-    try:
-        old = termios.tcgetattr(fds)
-    except termios.error:
-        gotterm = False
+def wrap(func, waiter=None):
+    old = getattr()
     try:
         func()
     except (EOFError, KeyboardInterrupt):
         print("")
     finally:
-        if gotterm:
-            termios.tcsetattr(fds, termios.TCSADRAIN, old)
-        waiter()
-
+        setattr(old)
+        if waiter:
+            waiter()
+      
 
 def main():
-    evt = parse_cli(" ".join(sys.argv[1:]))
-    cli = CLI()
-    cli.scan(cmd)
-    cli.scan(log)
-    cli.scan(tdo)
-    if evt.txt:
-        cli.scan(irc)
-        cli.scan(rss)
-        return command(cli, evt.otxt)
-    elif "c" in evt.opts:
+    cfg = Message()
+    cfg.parse(" ".join(sys.argv[1:]))
+    dowait = False
+    if os.path.exists("modules"):
+        sys.path.insert(0, ".")
+        from modules.storage import Storage
+        Storage.workdir = os.path.expanduser("~/.opq")
+        from modules import cmd, irc, log, rss, sts, tdo
+        scan(cmd)
+        scan(irc)
+        scan(log)
+        scan(rss)
+        scan(sts)
+        scan(tdo)
+    if cfg.txt:
+        cli = CLI()
+        command(cli, cfg.otxt)
+    elif "d" in cfg.opts:
+        daemon()
+        dowait = True
+    elif "c" in cfg.opts:
         date = time.ctime(time.time()).replace("  ", " ")
         print(f"OPQ started {date}")
-        bot = irc.init()
-        bot.clone(cli) 
-        rss.init()
         csl = Console()
-        csl.clone(cli)
-        csl.scan(irc)
-        csl.scan(rss)
-        csl.scan(flt)
-        csl.scan(thr)
-        csl.start()
-        wait(waiter)
+        launch(csl.loop)
+        dowait = True
+    if dowait:
+        irc.init()
+        rss.init()
+        wait()
 
 
-wrap(main)
+wrap(main, waiter)

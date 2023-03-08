@@ -4,8 +4,8 @@
 import time
 
 
-from ..handler import starttime
-from ..utility import elapsed
+from opq.handler import starttime
+from opq.utility import elapsed
 
 
 def __dir__():
