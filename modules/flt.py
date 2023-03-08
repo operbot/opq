@@ -1,8 +1,8 @@
 # This file is placed in the Public Domain.
 
 
-from opq.handler import Listens
-from opq.objects import name
+from opq.listens import Listens
+from opq.objects import kind
 
 
 def __dir__():
@@ -21,4 +21,4 @@ def flt(event):
         return
     except (KeyError, TypeError, IndexError, ValueError):
         pass
-    event.reply(' | '.join([name(o) for o in Listens.objs]))
+    event.reply(' | '.join([kind(o, True) for o in Listens.objs]))

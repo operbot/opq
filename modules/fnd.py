@@ -1,9 +1,11 @@
 # This file is placed in the Public Domain.
 
 
-from opq.objects import format, keys
-from opq.storage import Storage
+from opq.objects import keys, tostr
 from opq.utility import elapsed, fntime
+
+
+from modules.storage import Storage, find
 
 
 def __dir__():
@@ -30,12 +32,12 @@ def fnd(event):
         keyz = ','.join(keys(event.gets))
     if len(event.args) > 1:
         keyz += ',' + ','.join(event.args[1:])
-    for path, obj in Storage.find(otype, event.gets):
+    for path, obj in find(otype, event.gets):
         if not keyz:
             keyz = ',' + ','.join(keys(obj))
         txt = '%s %s %s' % (
                          str(nmr),
-                         format(obj, keyz),
+                         tostr(obj, keyz),
                          elapsed(fntime(path))
                         )
         nmr += 1
