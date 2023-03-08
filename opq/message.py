@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+'messages'
+
+
 from .default import Default
 from .listens import Listens
 from .objects import Object
@@ -22,7 +25,7 @@ class Message(Default):
         self.isparsed = False
         self.result = []
         self.sets = Object()
-        self.type = "command"
+        self.type = 'command'
         self.toskip = Object()
 
     def parsed(self):

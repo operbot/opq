@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"threads"
+'threads'
 
 
 import queue
@@ -10,8 +10,8 @@ import threading
 
 def __dir__():
     return (
-            "Thread",
-            "launch"
+            'Thread',
+            'launch'
            ) 
 
 
@@ -42,7 +42,7 @@ class Thread(threading.Thread):
 
 
 def launch(func, *args, **kwargs):
-    name = kwargs.get("name", "")
+    name = kwargs.get('name', '')
     thr = Thread(func, name, *args)
     thr.start()
     return thr

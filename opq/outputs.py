@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+'output cache'
+
+
 import queue
 import textwrap
 import threading
@@ -68,7 +71,10 @@ class Output(Object):
                 continue
             if len(txtlist) > 3:
                 self.extend(channel, txtlist)
-                self.dosay(channel, "%s put in cache, use !mre to show more" % len(txtlist))
+                self.dosay(
+                           channel,
+                           '%s put in cache, use !mre to show more' % len(txtlist)
+                          )
                 continue
             _nr = -1
             for txt in txtlist:

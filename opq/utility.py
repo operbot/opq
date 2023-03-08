@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"utility"
+'utility'
 
 
 import getpass
@@ -16,7 +16,6 @@ from functools import wraps
 
 def __dir__():
     return (
-            'cdir',
             'elapsed',
             'fnclass',
             'fntime',
@@ -24,13 +23,6 @@ def __dir__():
             'spl',
             'wait'
            )
-
-
-def cdir(path):
-    pth = pathlib.Path(path)
-    if path.split(os.sep)[-1].count(":") == 2:
-        pth = pth.parent
-    os.makedirs(pth, exist_ok=True)
 
 
 def elapsed(seconds, short=True):
@@ -76,8 +68,8 @@ def elapsed(seconds, short=True):
 
 def fnclass(path):
     try:
-        _rest, *pth = path.split("store")
-        splitted = pth[0].split(os.sep)
+        _rest, *pth = path.split('store')
+        splitted = pth[0].split("/")
         return splitted[1]
     except ValueError:
         pass
@@ -85,13 +77,13 @@ def fnclass(path):
 
 
 def fntime(daystr):
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    if "." in datestr:
-        datestr, rest = datestr.rsplit(".", 1)
+    daystr = daystr.replace('_', ':')
+    datestr = " ".join(daystr.split("/")[-2:])
+    if '.' in datestr:
+        datestr, rest = datestr.rsplit('.', 1)
     else:
-        rest = ""
-    tme = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+        rest = ''
+    tme = time.mktime(time.strptime(datestr, '%Y-%m-%d %H:%M:%S'))
     if rest:
         tme += float("." + rest)
     else:

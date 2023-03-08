@@ -1,7 +1,7 @@
 # This is placed in the Public Domain.
 
 
-"listens"
+'listens'
 
 
 from .objects import Object

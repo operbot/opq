@@ -5,7 +5,9 @@
 "object programming queue"
 
 
+import getpass
 import os
+import pwd
 import readline
 import sys
 import termios
@@ -68,6 +70,19 @@ def daemon():
 
 def getattr():
     return termios.tcgetattr(sys.stdin.fileno())
+
+
+def privileges(username):
+    if os.getuid() != 0:
+        return
+    try:
+        pwnam = pwd.getpwnam(username)
+    except KeyError:
+        username = getpass.getuser()
+        pwnam = pwd.getpwnam(username)
+    os.setgroups([])
+    os.setgid(pwnam.pw_gid)
+    os.setuid(pwnam.pw_uid)
 
 
 def setattr(old):

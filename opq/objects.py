@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"objects"
+'objects'
 
 
 import datetime
@@ -21,7 +21,7 @@ def __dir__():
             'tostr',
             'update',
             'values'
-            )
+           )
 
 
 olock = _thread.allocate_lock()
@@ -65,7 +65,7 @@ def keys(obj):
 
 def kind(obj, single=False):
     kin = str(type(obj)).split()[-1][1:-2]
-    if kin == "type":
+    if kin == 'type':
         kin = obj.__name__
     if single:
         kin = kin.split(".")[-1]
@@ -94,24 +94,24 @@ def search(obj, selector):
     return res
 
 
-def tostr(obj, args="", skip="", plain=False):
+def tostr(obj, args='', skip='', plain=False):
     res = []
     keyz = []
-    if "," in args:
-        keyz = args.split(",")
+    if ',' in args:
+        keyz = args.split(',')
     if not keyz:
         keyz = keys(obj)
     for key in sorted(keyz):
-        if key.startswith("_"):
+        if key.startswith('_'):
             continue
         if skip:
-            skips = skip.split(",")
+            skips = skip.split(',')
             if key in skips:
                 continue
         value = getattr(obj, key, None)
         if not value:
             continue
-        if " object at " in str(value):
+        if ' object at ' in str(value):
             continue
         txt = ""
         if plain:
@@ -122,7 +122,7 @@ def tostr(obj, args="", skip="", plain=False):
         else:
             txt = f'{key}={value}'
         res.append(txt)
-    txt = " ".join(res)
+    txt = ' '.join(res)
     return txt.strip()
 
 

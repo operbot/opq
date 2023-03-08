@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"command"
+'command'
 
 
 import inspect
@@ -44,5 +44,5 @@ def command(cli, txt):
 
 def scan(mod):
     for _key, cmd in inspect.getmembers(mod, inspect.isfunction):
-        if "event" in cmd.__code__.co_varnames:
+        if 'event' in cmd.__code__.co_varnames:
             Command.add(cmd.__name__, cmd)

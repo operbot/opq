@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"encoder"
+'encoder'
 
 
 import json
@@ -39,27 +39,20 @@ class ObjectEncoder(json.JSONEncoder):
             return str(o)
 
 
-@locked(olock)
-def dump(obj, fnm, *args, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, default=None, sort_keys=False, **kw):
-    return json.dump(
-                     obj,
-                     fnm,
-                     *args,
-                     skipkeys=skipkeys,
-                     ensure_ascii=ensure_ascii,
-                     check_circular=check_circular,
-                     allow_nan=allow_nan,
-                     cls=cls or ObjectEncoder,
-                     indent=indent,
-                     separators=separators,
-                     default=default,
-                     sort_keys=sort_keys,
-                     **kw
-                    )
-
-
-
-def dumps(obj, *args, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, default=None, sort_keys=False, **kw):
+def dumps(
+          obj,
+          *args,
+          skipkeys=False,
+          ensure_ascii=True,
+          check_circular=True,
+          allow_nan=True,
+          cls=None,
+          indent=None,
+          separators=None,
+          default=None,
+          sort_keys=False,
+          **kw
+         ):
     return json.dumps(
                       obj,
                       *args,

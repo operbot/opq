@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"clients"
+'clients'
 
 
 from .command import Command
@@ -13,7 +13,7 @@ from .threads import launch
 
 def __dir__():
     return (
-            "Client",
+            'Client',
            )
 
 
@@ -22,14 +22,14 @@ class Client(Handler):
     def __init__(self):
         Handler.__init__(self)
         Listens.add(self)
-        self.register("command", Command.handle)
+        self.register('command', Command.handle)
      
     def announce(self, txt):
         self.raw(txt)
 
     def event(self, txt):
         msg = Message()
-        msg.type = "command"
+        msg.type = 'command'
         msg.orig = repr(self)
         msg.parse(txt)
         return msg
