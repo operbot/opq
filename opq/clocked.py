@@ -1,14 +1,14 @@
 # This file is placed in the Public Domain.
 
 
-'clocked'
+"clocked"
 
 
 import threading
 import time
 
 
-from .objects import Object, name
+from .objects import Object
 from .threads import launch
 
 
@@ -29,7 +29,7 @@ class Timer:
         self.args = args
         self.func = func
         self.sleep = sleep
-        self.name = thrname or name(self.func)
+        self.name = thrname or kind(self.func, True)
         self.state = Object
         self.timer = None
 

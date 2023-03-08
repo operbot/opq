@@ -1,4 +1,7 @@
-# This file is placed in the Public Domain.
+# This is placed in the Public Domain.
+
+
+"listens"
 
 
 from .objects import Object
@@ -7,7 +10,7 @@ from .objects import Object
 def __dir__():
     return (
             'Listens',
-           ) 
+           )
 
 
 class Listens(Object):
@@ -16,8 +19,7 @@ class Listens(Object):
 
     @staticmethod
     def add(obj):
-        if repr(obj) not in [repr(x) for x in Listens.objs]:
-            Listens.objs.append(obj)
+        Listens.objs.append(obj)
 
     @staticmethod
     def announce(txt):
@@ -26,12 +28,9 @@ class Listens(Object):
 
     @staticmethod
     def byorig(orig):
-        res = None
         for obj in Listens.objs:
             if repr(obj) == orig:
-                res = obj
-                break
-        return res
+                return obj
 
     @staticmethod
     def say(orig, txt, channel=None):
@@ -41,3 +40,5 @@ class Listens(Object):
                 bot.say(channel, txt)
             else:
                 bot.raw(txt)
+
+    

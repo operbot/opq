@@ -1,10 +1,14 @@
 # This file is placed in the Public Domain.
 
 
+"encoder"
+
+
 import json
 
 
-from .objects import Object, locked, olock
+from .objects import Object, olock
+from .utility import locked
 
 
 def __dir__():
@@ -13,10 +17,6 @@ def __dir__():
             'dump',
             'dumps'
            ) 
-
-
-__all__ = __dir__()
-
 
 class ObjectEncoder(json.JSONEncoder):
 
@@ -59,7 +59,6 @@ def dump(obj, fnm, *args, skipkeys=False, ensure_ascii=True, check_circular=True
 
 
 
-@locked(olock)
 def dumps(obj, *args, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, default=None, sort_keys=False, **kw):
     return json.dumps(
                       obj,

@@ -1,31 +1,21 @@
 # This file is placed in the Public Domain.
 
 
-import inspect
+"handler"
+
+
 import queue
 import threading
-import time
 
 
-from .listens import Listens
-from .objects import Object, register, update
-from .message import Message
-from .threads import launch
+from .command import Command
+from .objects import Object, update
 
 
 def __dir__():
     return (
             'Handler',
-            'command',
-            'parse_cli',
-            'starttime'
-           ) 
-
-
-__all__ = __dir__()
-
-
-starttime = time.time()
+           )
 
 
 class Handler(Object):
@@ -35,38 +25,23 @@ class Handler(Object):
     def __init__(self):
         Object.__init__(self)
         self.cbs = Object()
-        self.cmds = Object()
         self.queue = queue.Queue()
         self.stopped = threading.Event()
-        self.register('command', self.dispatch)
-        Listens.add(self)
 
     def clone(self, other):
         update(self.cmds, other.cmds)
 
-    def dispatch(self, event):
-        if not event.isparsed:
-            event.parse(event.txt)
-        if not event.orig:
-            event.orig = repr(self)
-        func = getattr(self.cmds, event.cmd, None)
+    def dispatch(self, evt):
+        Command.handle(evt)
+
+    def handle(self, evt):
+        func = getattr(self.cbs, evt.type, None)
         if func:
             try:
-                func(event)
+                func(evt)
             except Exception as ex:
                 exc = ex.with_traceback(ex.__traceback__)
                 Handler.errors.append(exc)
-                event.ready()
-                return
-            event.show()
-        event.ready()
-
-    def handle(self, event):
-        func = getattr(self.cbs, event.type, None)
-        if not func:
-            event.ready()
-            return
-        event.__thr__ = launch(func, event)
 
     def loop(self):
         while not self.stopped.set():
@@ -75,44 +50,11 @@ class Handler(Object):
     def poll(self):
         return self.queue.get()
 
-    def put(self,event):
-        if not event.orig:
-            event.orig = repr(self)
-        self.queue.put_nowait(event)
+    def put(self, evt):
+        self.queue.put_nowait(evt)
 
-    def register(self, typ, cbs):
-        setattr(self.cbs, typ, cbs)
-
-    def restart(self):
-        self.stop()
-        self.start()
-
-    def scan(self, mod):
-        for key, cmd in inspect.getmembers(mod, inspect.isfunction):
-            if key.startswith('cb'):
-                continue
-            names = cmd.__code__.co_varnames
-            if 'event' in names:
-                register(self.cmds, key, cmd)
+    def register(self, cmd, func):
+        setattr(self.cbs, cmd, func)
 
     def stop(self):
         self.stopped.set()
-
-    def start(self):
-        self.stopped.clear()
-        launch(self.loop)
-
-
-def command(cli, txt):
-    e = Message()
-    e.parse(txt)
-    e.orig = repr(cli)
-    cli.dispatch(e)
-    return e
-
-
-def parse_cli(txt):
-    e = Message()
-    e.type = 'command'
-    e.parse(txt)
-    return e

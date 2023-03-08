@@ -1,57 +1,30 @@
 # This file is placed in the Public Domain.
 
 
+"objects"
+
+
 import datetime
 import os
-import types
 import uuid
 import _thread
-
-
-from functools import wraps
 
 
 def __dir__():
     return (
             'Object',
-            'format',
-            'get',
             'items',
             'keys',
             'kind',
-            'name',
             'oid',
-            'register',
             'search',
+            'tostr',
             'update',
             'values'
             )
 
 
-__all__ = __dir__()
-
-
 olock = _thread.allocate_lock()
-
-
-def locked(lock):
-
-    def lockeddec(func, *args, **kwargs):
-
-        @wraps(func)
-        def lockedfunc(*args, **kwargs):
-            lock.acquire()
-            res = None
-            try:
-                res = func(*args, **kwargs)
-            finally:
-                lock.release()
-            return res
-
-        return lockedfunc
-
-    return lockeddec
-
 
 
 class Object:
@@ -80,42 +53,6 @@ class Object:
         return str(self.__dict__)
 
 
-
-def format(obj, args='', skip='', plain=False):
-    res = []
-    keyz = []
-    if ',' in args:
-        keyz = args.split(',')
-    if not keyz:
-        keyz = keys(obj)
-    for key in sorted(keyz):
-        if key.startswith('_'):
-            continue
-        if skip:
-            skips = skip.split(',')
-            if key in skips:
-                continue
-        value = getattr(obj, key, None)
-        if not value:
-            continue
-        if ' object at ' in str(value):
-            continue
-        txt = ''
-        if plain:
-            value = str(value)
-        if isinstance(value, str) and len(value.split()) >= 2:
-            txt = f'{key}="{value}"'
-        else:
-            txt = f'{key}={value}'
-        res.append(txt)
-    txt = ' '.join(res)
-    return txt.strip()
-
-
-def get(obj, key, default=None):
-    return getattr(obj, key, default)
-
-
 def items(obj):
     if isinstance(obj, type({})):
         return obj.items()
@@ -126,26 +63,13 @@ def keys(obj):
     return obj.__dict__.keys()
 
 
-def kind(obj):
+def kind(obj, single=False):
     kin = str(type(obj)).split()[-1][1:-2]
-    if kin == 'type':
+    if kin == "type":
         kin = obj.__name__
+    if single:
+        kin = kin.split(".")[-1]
     return kin
-
-
-def name(obj):
-    typ = type(obj)
-    if isinstance(typ, types.ModuleType):
-        return obj.__name__
-    if '__self__' in dir(obj):
-        return '%s.%s' % (obj.__self__.__class__.__name__, obj.__name__)
-    if '__class__' in dir(obj) and '__name__' in dir(obj):
-        return '%s.%s' % (obj.__class__.__name__, obj.__name__)
-    if '__class__' in dir(obj):
-        return obj.__class__.__name__
-    if '__name__' in dir(obj):
-        return '%s.%s' % (obj.__class__.__name__, obj.__name__)
-    return None
 
 
 def oid(obj):
@@ -154,10 +78,6 @@ def oid(obj):
                         str(uuid.uuid4().hex),
                         os.sep.join(str(datetime.datetime.now()).split()),
                        )
-
-
-def register(obj, key, value) -> None:
-    setattr(obj, key, value)
 
 
 def search(obj, selector):
@@ -172,6 +92,38 @@ def search(obj, selector):
             res = True
             break
     return res
+
+
+def tostr(obj, args="", skip="", plain=False):
+    res = []
+    keyz = []
+    if "," in args:
+        keyz = args.split(",")
+    if not keyz:
+        keyz = keys(obj)
+    for key in sorted(keyz):
+        if key.startswith("_"):
+            continue
+        if skip:
+            skips = skip.split(",")
+            if key in skips:
+                continue
+        value = getattr(obj, key, None)
+        if not value:
+            continue
+        if " object at " in str(value):
+            continue
+        txt = ""
+        if plain:
+            value = str(value)
+            txt = f'{value}'
+        elif isinstance(value, str) and len(value.split()) >= 2:
+            txt = f'{key}="{value}"'
+        else:
+            txt = f'{key}={value}'
+        res.append(txt)
+    txt = " ".join(res)
+    return txt.strip()
 
 
 def update(obj, data):

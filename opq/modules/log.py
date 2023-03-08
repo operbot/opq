@@ -1,10 +1,13 @@
 # This file is placed in the Public Domain.
 
 
+"log"
+
+
 import time
 
 
-from ..storage import Storage
+from ..storage import Storage, find, save
 from ..utility import elapsed, fntime
 from ..objects import Object
 
@@ -20,7 +23,7 @@ class Log(Object):
 
     def __init__(self):
         super().__init__()
-        self.txt = ''
+        self.txt = ""
 
 
 Storage.add(Log)
@@ -29,17 +32,17 @@ Storage.add(Log)
 def log(event):
     if not event.rest:
         nmr = 0
-        for fnm, obj in Storage.find('log'):
-            event.reply('%s %s %s' % (
+        for fnm, obj in find("log"):
+            event.reply("%s %s %s" % (
                                       nmr,
                                       obj.txt,
-                                      elapsed(time.time()-fntime(fnm)))
+                                      elapsed(time.time() - fntime(fnm)))
                                      )
             nmr += 1
         if not nmr:
-            event.reply('log <txt>')
+            event.reply("log <txt>")
         return
     obj = Log()
     obj.txt = event.rest
-    Storage.save(obj)
-    event.reply('ok')
+    save(obj)
+    event.reply("ok")
