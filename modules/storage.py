@@ -30,6 +30,13 @@ def __dir__():
 disklock = _thread.allocate_lock()
 
 
+def cdir(path):
+    pth = pathlib.Path(path)
+    if path.split("/")[-1].count(":") == 2:
+        pth = pth.parent
+    os.makedirs(pth, exist_ok=True)
+
+
 class NoClass(Exception):
 
     pass
